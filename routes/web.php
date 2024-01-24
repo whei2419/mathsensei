@@ -16,3 +16,11 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 })->where("any",".*");
+
+Livewire::setScriptRoute(function ($handle) {
+    return Route::get('/mathsensei/public/livewire/livewire.js', $handle);
+});
+
+Livewire::setUpdateRoute(function ($handle) {
+    return Route::post('/mathsensei/public/livewire/update', $handle);
+});
