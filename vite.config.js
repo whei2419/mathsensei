@@ -20,6 +20,12 @@ export default defineConfig({
             },
         }),
     ],
+    css: {
+        preprocessorOptions: {
+          scss: {
+            additionalData: `@import "resources/sass/_variables.scss";`,
+          },
+        }},
     resolve: {
         alias: {
             vue: 'vue/dist/vue.esm-bundler.js',

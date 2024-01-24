@@ -1,6 +1,6 @@
 <template>
-  <div>
-    test route
+  <div class="main-container">
+
   </div>
 </template>
 

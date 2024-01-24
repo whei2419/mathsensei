@@ -1,0 +1,35 @@
+.button{
+    border-radius: 10px;
+    border: none;
+    padding: 5px 10px;
+    font-family: $font-family-sans-serif;
+    box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+
+    &:hover {
+        opacity: 0.8;
+        transition: opacity 0.5 ease-in-out;
+    }
+
+    &.primary{
+        background-color: $light-red;
+        color: $white;
+    }
+
+    &.font-size-small {
+        font-size:$font-small;
+    }
+    &.font-size-medium {
+        font-size:$font-medium;
+    }
+    &.font-size-large {
+        font-size:$font-large;
+    }
+
+    &.button-full {
+        width: 100%;
+        min-height: 60px;
+    }
+}
+
+
+
