@@ -30,7 +30,6 @@ class QuestionResource extends Resource
                     ->required(),
                 Forms\Components\TextInput::make('name')
                     ->label('Question')
-
                     ->required()
                     ->maxLength(255),
             ]);
