@@ -71,7 +71,7 @@ class QuestionResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\HintRelationManager::class,
         ];
     }
 

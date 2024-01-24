@@ -16,4 +16,9 @@ class Hint extends Model
         'left',
         'right',
     ];
+
+    public function question()
+    {
+        return $this->belongsTo(Question::class);
+    }
 }
