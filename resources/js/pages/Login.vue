@@ -1,6 +1,6 @@
 <template>
-  <div class="main-container">
-
+  <div>
+    login
   </div>
 </template>
 
