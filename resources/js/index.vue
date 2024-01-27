@@ -6,7 +6,7 @@
 </template>
 <script>
 import axios from 'axios';
-import baseUrl from '../js/utils.js';
+import config from '../js/utils.js';
 
 export default {
     data() {
@@ -15,15 +15,13 @@ export default {
     };
   },
     created() {
-        const token = localStorage.getItem('token');
-        if (token) {
+        if (config.token) {
             axios({
                 method: 'get',
-                url: `${baseUrl}/api/user`,
+                url: `${config.baseUrl}/api/user`,
                 headers: {
-                    Authorization: `Bearer ${token}`
+                    Authorization: `Bearer ${config.token}`
                 },
-                responseType: 'stream'
             })
                 .then((res) => {
                     this. isLoading = false;
