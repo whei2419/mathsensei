@@ -4,6 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\GameController;
+
 
 
 /*
@@ -24,6 +26,12 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::group(['prefix' => 'question'], function () {
         Route::get('get', [QuestionController::class, 'get']);
+    });
+
+    Route::group(['prefix' => 'game'], function () {
+        Route::post('add', [GameController::class, 'newGame']);
+        Route::post('result', [GameController::class, 'results']);
+
     });
 
   
