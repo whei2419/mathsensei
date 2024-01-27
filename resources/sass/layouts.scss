@@ -17,6 +17,14 @@ html {
     margin: 0;
 }
 
+.logo-text{
+    font-size:5rem;
+    -webkit-text-fill-color: $yellow; /* Will override color (regardless of order) */
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: $light-red;
+    line-height: 70px;
+}
+
 
 
 
