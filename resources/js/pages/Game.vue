@@ -6,7 +6,7 @@
                     Menu
                 </button>
                 <div class="time-container">
-                    <p class="time">60</p>
+                    <p class="time">{{ timer }}</p>
                 </div>
                 <button class="button primary  font-size-small">
                     Help
@@ -16,16 +16,18 @@
             <h2 class="problem-name">
                 {{ currentQuestion[questionIndex].name }}
             </h2>
+            <p class="text-danger" :class="{ 'show-error': showError.class }">{{ showError.value }}</p>
 
             <div v-for="(step, index) in currentQuestion" :key="index">
                 <div v-if="index === questionIndex">
                     <div class="step-container" v-for="(step, index) in currentQuestion[index].step" :key="index">
                         <div v-if="currentStep == index || isDone(index) === true" class="step-count"
                             :class="{ 'is-done': isDone(index) }">
-                            <input :ref="setRefName(questionIndex, 'left', index)" type="text" />
+                            <input :ref="setRefName(questionIndex, 'left', index)" type="text" @input="handleChange" />
                             <span>=</span>
-                            <input :ref="setRefName(questionIndex, 'right', index)" />
+                            <input :ref="setRefName(questionIndex, 'right', index)" @input="handleChange" />
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -44,138 +46,34 @@ export default {
         return {
             questionIndex: 0,
             currentStep: 0,
-            sampleData: [
-                {
-                    questions: [
-                        {
-                            id: 1,
-                            name: "3x+5=0",
-                            level_id: 1,
-                            created_at: "2024-01-24T15:46:09.000000Z",
-                            updated_at: "2024-01-24T15:46:09.000000Z",
-                            level: {
-                                id: 1,
-                                created_at: "2024-01-24T15:39:53.000000Z",
-                                updated_at: "2024-01-24T15:43:35.000000Z",
-                                name: "Easy",
-                            },
-                            step: [
-                                {
-                                    id: 1,
-                                    left: "3x",
-                                    right: "-5",
-                                    question_id: 1,
-                                    created_at: "2024-01-24T18:45:10.000000Z",
-                                    updated_at: "2024-01-24T18:45:10.000000Z",
-                                },
-                                {
-                                    id: 2,
-                                    left: "3x ÷ 3",
-                                    right: "5÷ 3",
-                                    question_id: 1,
-                                    created_at: "2024-01-24T18:48:11.000000Z",
-                                    updated_at: "2024-01-24T18:48:40.000000Z",
-                                },
-                                {
-                                    id: 3,
-                                    left: "x",
-                                    right: "5 / 3",
-                                    question_id: 1,
-                                    created_at: "2024-01-24T18:48:59.000000Z",
-                                    updated_at: "2024-01-24T18:48:59.000000Z",
-                                },
-                            ],
-                        },
-                        {
-                            id: 2,
-                            name: "y+7x=3",
-                            level_id: 2,
-                            created_at: "2024-01-24T15:47:24.000000Z",
-                            updated_at: "2024-01-24T15:47:24.000000Z",
-                            level: {
-                                id: 2,
-                                created_at: "2024-01-24T15:43:41.000000Z",
-                                updated_at: "2024-01-24T15:43:41.000000Z",
-                                name: "Medium",
-                            },
-                            step: [
-                                {
-                                    id: 1,
-                                    left: "3x",
-                                    right: "-5",
-                                    question_id: 1,
-                                    created_at: "2024-01-24T18:45:10.000000Z",
-                                    updated_at: "2024-01-24T18:45:10.000000Z",
-                                },
-                                {
-                                    id: 2,
-                                    left: "3x ÷ 3",
-                                    right: "5÷ 3",
-                                    question_id: 1,
-                                    created_at: "2024-01-24T18:48:11.000000Z",
-                                    updated_at: "2024-01-24T18:48:40.000000Z",
-                                },
-                                {
-                                    id: 3,
-                                    left: "x",
-                                    right: "5 / 3",
-                                    question_id: 1,
-                                    created_at: "2024-01-24T18:48:59.000000Z",
-                                    updated_at: "2024-01-24T18:48:59.000000Z",
-                                },
-                            ],
-                        },
-                        {
-                            id: 3,
-                            name: "x + y + z = 0",
-                            level_id: 3,
-                            created_at: "2024-01-24T15:48:07.000000Z",
-                            updated_at: "2024-01-24T15:48:07.000000Z",
-                            level: {
-                                id: 3,
-                                created_at: "2024-01-24T15:43:46.000000Z",
-                                updated_at: "2024-01-24T15:43:46.000000Z",
-                                name: "Hard",
-                            },
-                            step: [
-                                {
-                                    id: 1,
-                                    left: "3x",
-                                    right: "-5",
-                                    question_id: 1,
-                                    created_at: "2024-01-24T18:45:10.000000Z",
-                                    updated_at: "2024-01-24T18:45:10.000000Z",
-                                },
-                                {
-                                    id: 2,
-                                    left: "3x ÷ 3",
-                                    right: "5÷ 3",
-                                    question_id: 1,
-                                    created_at: "2024-01-24T18:48:11.000000Z",
-                                    updated_at: "2024-01-24T18:48:40.000000Z",
-                                },
-                                {
-                                    id: 3,
-                                    left: "x",
-                                    right: "5 / 3",
-                                    question_id: 1,
-                                    created_at: "2024-01-24T18:48:59.000000Z",
-                                    updated_at: "2024-01-24T18:48:59.000000Z",
-                                },
-                            ],
-                        },
-                    ],
-                },
-            ],
+            sampleData: [],
+            showError: {
+                class: false,
+                value: ''
+            },
+            timer: 0,
         };
     },
     computed: {
+        remainingSeconds() {
+            const endTimeString = localStorage.getItem('endTime');
+            if (!endTimeString) return 0;
+
+            const endTime = new Date(endTimeString);
+
+
+            const currentTime = new Date();
+            const remainingMilliseconds = Math.max(0, endTime - currentTime);
+            const remainingSeconds = Math.floor(remainingMilliseconds / 1000);
+
+            return remainingSeconds;
+        },
         stepCount() {
             let stepCount = this.currentQuestion[this.questionIndex].step.length - 1;
             return stepCount;
         },
         currentQuestion() {
-            return this.sampleData[0].questions;
+            return this.sampleData;
         },
         buttonText() {
             if (this.currentStep > this.stepCount) {
@@ -187,6 +85,14 @@ export default {
         },
     },
     methods: {
+        startTimer() {
+            const intervalId = setInterval(() => {
+                this.timer--;
+                if (this.timer <= 0) {
+                    clearInterval(intervalId);
+                }
+            }, 1000);
+        },
         isDone(index) {
             if (this.currentStep > index) {
                 return true;
@@ -198,6 +104,11 @@ export default {
             return `${questionIndex}${side}${index}`;
         },
         showAnswear() { },
+        handleChange(e) {
+            e.target.classList.remove("wrong-answer");
+            this.showError.class = false;
+            this.showError.value = '';
+        },
         handleAnswear() {
             if (this.currentStep === this.stepCount) {
                 this.questionIndex++;
@@ -207,22 +118,45 @@ export default {
 
             const currentStepLeft = this.setRefName(this.questionIndex, 'left', this.currentStep);
             const currentStepRight = this.setRefName(this.questionIndex, 'right', this.currentStep);
-            const leftInput = this.$refs[currentStepLeft][0].value;
-            const rightInput = this.$refs[currentStepRight][0].value;
+            const leftInput = this.$refs[currentStepLeft];
+            const rightInput = this.$refs[currentStepRight];
             let currentStepData = this.currentQuestion[this.questionIndex].step[this.currentStep];
 
-            if (leftInput === null || leftInput === '' || rightInput === null || rightInput === '') {
+            if (leftInput[0].value === null || leftInput[0].value === '' || rightInput[0].value === null || rightInput[0].value === '') {
+                this.showError.class = true;
+                this.showError.value = "Please complete your answer";
+                leftInput[0].classList.add("wrong-answer", "shake");
+                rightInput[0].classList.add("wrong-answer", "shake");
+                setTimeout(() => {
+                    leftInput[0].classList.remove("shake");
+                    rightInput[0].classList.remove("shake");
+                }, 500);
                 return;
             }
-            if (leftInput === currentStepData.left && rightInput === currentStepData.right) {
+            if (leftInput[0].value === currentStepData.left && rightInput[0].value === currentStepData.right) {
                 if (this.currentStep <= this.stepCount) {
                     this.currentStep++;
                     console.log(this.currentStep);
                 }
+            } else {
+                this.showError.class = true;
+                this.showError.value = "Please enter the right answer";
+                leftInput[0].classList.add("wrong-answer", "shake");
+                rightInput[0].classList.add("wrong-answer", "shake");
+
+                setTimeout(() => {
+                    leftInput[0].classList.remove("shake");
+                    rightInput[0].classList.remove("shake");
+                }, 500);
             }
 
         }
-    }
+    },
+    created() {
+        this.sampleData = JSON.parse(localStorage.getItem('question'));
+        this.timer = this.remainingSeconds;
+        this.startTimer();
+    },
 };
 </script>
 
@@ -232,6 +166,13 @@ export default {
     height: 100vh;
     margin: 0;
     background: $pale-cream;
+
+    .text-danger {
+        color: red;
+        text-align: center;
+        height: 10px;
+        padding-bottom: 20px;
+    }
 
     .game-information {
         padding: 0 30px 30px;
@@ -251,7 +192,8 @@ export default {
             font-size: $font-medium;
             color: $light-red;
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
+            line-height: 20px;
         }
 
         .check-button {
@@ -277,6 +219,8 @@ export default {
         }
 
         .step-container {
+            box-sizing: border-box;
+
             .step-count {
                 display: flex;
                 flex-direction: row;
@@ -308,6 +252,36 @@ export default {
                 font-size: 1.7rem;
                 margin-bottom: 20px;
                 text-align: center;
+
+                &.wrong-answer {
+                    outline: 3px $red solid;
+                }
+
+                @keyframes shake {
+                    0% {
+                        transform: translateX(0);
+                    }
+
+                    25% {
+                        transform: translateX(-5px);
+                    }
+
+                    50% {
+                        transform: translateX(5px);
+                    }
+
+                    75% {
+                        transform: translateX(-3px);
+                    }
+
+                    100% {
+                        transform: translateX(0);
+                    }
+                }
+
+                &.shake {
+                    animation: shake 0.5s ease;
+                }
             }
         }
     }

@@ -12,19 +12,19 @@
 </template>
 
 <script>
-import bgSound from '../../sounds/ES_Sunshine Rain.mp3'
-import axios from 'axios';
-import baseUrl from '../utils.js';
+import bgSound from "../../sounds/ES_Sunshine Rain.mp3";
+import axios from "axios";
+import config from "../utils.js";
 export default {
     data() {
         return {
             audio: new Audio(bgSound),
-            userData: null
+            userData: null,
+            token: null,
         };
     },
     mounted() {
-        this.playMusic();
-        this.userData = JSON.parse(localStorage.getItem('userDetails'));
+        // this.playMusic();
     },
     methods: {
         playMusic() {
@@ -33,29 +33,49 @@ export default {
         pauseMusic() {
             this.audio.pause();
         },
-        handleStart() {
-            localStorage.setItem('isStart', true);
-            console.log(localStorage.getItem('isStart'));
-            console.log(this.userData);
-            const token = localStorage.getItem('token');
-
+        getQuestion() {
+            const token = localStorage.getItem("token");
             axios({
-                method: 'post',
-                url: `${baseUrl}/api/game/add`,
+                method: "get",
+                url: `${config.baseUrl}/api/question/get`,
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }).then((res) => {
+                console.log(res.data);
+                localStorage.setItem('question', JSON.stringify(res.data.questions));
+                const currentTime = new Date();
+                const dateString = currentTime.toISOString();
+                const startTime = new Date();
+                localStorage.setItem('startTime', dateString);
+                const endTime = new Date(startTime.getTime() + 60 * 1000);
+                const endTimeString = endTime.toISOString();
+                localStorage.setItem('endTime', endTimeString);
+                this.$router.push('/game');
+            });
+        },
+        handleStart() {
+            const token = localStorage.getItem("token");
+            axios({
+                method: "post",
+                url: `${config.baseUrl}/api/game/add`,
                 data: {
-                    user_id: this.userData.id
+                    user_id: this.userData.id,
                 },
                 headers: {
-                    Authorization: `Bearer ${token}`
+                    Authorization: `Bearer ${token}`,
                 },
-                responseType: 'stream'
-            })
-                .then((res) => {
-                    console.log(res);
-                });
-
-        }
+            }).then((res) => {
+                localStorage.setItem("isStart", true);
+                localStorage.setItem('game_id', res.data.game.user_id);
+                this.getQuestion();
+            });
+        },
     },
+    created() {
+        this.token = config.token;
+        this.userData = JSON.parse(localStorage.getItem("userDetails"));
+    }
 };
 </script>
 

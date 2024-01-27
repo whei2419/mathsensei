@@ -1,2 +1,7 @@
 const baseUrl =  import.meta.env.VITE_API_ENDPOINT
-export default baseUrl;
+const token = localStorage.getItem("token");
+
+export default {
+    baseUrl,
+    token
+  };

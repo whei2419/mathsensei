@@ -1,5 +1,5 @@
 <template>
-  <div class="main-container">
+    <div class="main-container">
         <div class="form-container">
             <h1 class="head-Text">Equation sensei 2</h1>
             <div class="form">
@@ -20,17 +20,17 @@
                 </Form>
             </div>
         </div>
-  </div>
+    </div>
 </template>
 
 <script>
 import { Field, Form, ErrorMessage } from 'vee-validate';
 import * as yup from 'yup';
-import baseUrl from '../utils.js'
+import config from '../utils.js'
 import axios from 'axios'
 
 export default {
-components: {
+    components: {
         Form,
         Field,
         ErrorMessage
@@ -42,18 +42,27 @@ components: {
         });
         return {
             schema,
+            token:''
         }
     },
     methods: {
         handleSubmit(values) {
-            axios.post(`${baseUrl}/api/login`, values).then(res => {
-                localStorage.setItem('userDetails',JSON.stringify(res.data.user));
+            axios({
+                method: "post",
+                url: `${config.baseUrl}/api/login`,
+                data: {
+                   email:values.email,
+                   password:values.password
+                },
+            }).then((res) => {
+                localStorage.setItem('userDetails', JSON.stringify(res.data.user));
                 localStorage.setItem('token', res.data.token);
                 this.$router.push('/Home');
-            }).catch(err => {
-                console.log(err);
             });
         }
+    },
+    created(){
+        this.token = config.token;
     }
 }
 </script>
