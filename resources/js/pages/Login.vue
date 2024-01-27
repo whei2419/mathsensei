@@ -1,5 +1,5 @@
 <template>
-    <div class="main-container">
+  <div class="main-container">
         <div class="form-container">
             <h1 class="head-Text">Equation sensei 2</h1>
             <div class="form">
@@ -20,7 +20,7 @@
                 </Form>
             </div>
         </div>
-    </div>
+  </div>
 </template>
 
 <script>
@@ -30,7 +30,7 @@ import baseUrl from '../utils.js'
 import axios from 'axios'
 
 export default {
-    components: {
+components: {
         Form,
         Field,
         ErrorMessage
