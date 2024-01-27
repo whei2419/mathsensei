@@ -1,7 +1,7 @@
 import './bootstrap';
 import { createApp } from 'vue';
 import AppComponent from './App.vue';
-import router from './router';
+import router from './router/router';
 
 const app = createApp({
     components: {
