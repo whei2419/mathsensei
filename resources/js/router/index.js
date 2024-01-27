@@ -1,12 +1,12 @@
 import { createRouter, createWebHashHistory } from "vue-router";
-import Test from '../components/TestRoute.vue'
 import login from '../pages/login.vue';
+import Game form '../pages/Game.vue';
 
 const routes = [
     {
         path:'/',
-        component:login,
-        name:'log-in'
+        component:Game,
+        name:'game'
     },
 ];
 
