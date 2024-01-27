@@ -41,4 +41,9 @@ class Question extends Model
         return $this->hasMany(Hint::class);
     }
 
+    public function results()
+    {
+        return $this->hasMany(Result::class);
+    }
+
 }
