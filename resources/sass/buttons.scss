@@ -14,6 +14,10 @@
         background-color: $light-red;
         color: $white;
     }
+    &.secondary{
+        background-color: $blue-grey;
+        color: $white;
+    }
 
     &.font-size-small {
         font-size:$font-small;
