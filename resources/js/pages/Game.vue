@@ -8,7 +8,7 @@
                 <div class="time-container">
                     <p class="time">{{ timer }}</p>
                 </div>
-                <button class="button primary  font-size-small">
+                <button class="button primary  font-size-small" @click="showAnswear">
                     Help
                 </button>
             </div>
@@ -86,6 +86,9 @@ export default {
     },
     methods: {
         startTimer() {
+            if(this.timer === 0){
+                return;
+            }
             const intervalId = setInterval(() => {
                 this.timer--;
                 if (this.timer <= 0) {
@@ -103,7 +106,17 @@ export default {
         setRefName(questionIndex, side, index) {
             return `${questionIndex}${side}${index}`;
         },
-        showAnswear() { },
+        showAnswear() {
+            const currentStepLeft = this.setRefName(this.questionIndex, 'left', this.currentStep);
+            const currentStepRight = this.setRefName(this.questionIndex, 'right', this.currentStep);
+            let leftInput = this.$refs[currentStepLeft];
+            let rightInput = this.$refs[currentStepRight];
+            let currentStepData = this.currentQuestion[this.questionIndex].step[this.currentStep];
+
+            console.log(currentStepData);
+            leftInput[0].value = currentStepData.left;
+            rightInput[0].value = currentStepData.right;
+         },
         handleChange(e) {
             e.target.classList.remove("wrong-answer");
             this.showError.class = false;
