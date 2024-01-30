@@ -48,7 +48,7 @@ export default {
                 const dateString = currentTime.toISOString();
                 const startTime = new Date();
                 localStorage.setItem('startTime', dateString);
-                const endTime = new Date(startTime.getTime() + 60 * 1000);
+                const endTime = new Date(startTime.getTime() + 180 * 1000);
                 const endTimeString = endTime.toISOString();
                 localStorage.setItem('endTime', endTimeString);
                 this.$router.push('/game');

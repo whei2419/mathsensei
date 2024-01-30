@@ -1,7 +1,9 @@
 <template>
     <div class="main-container">
         <div class="form-container">
-            <h1 class="head-Text">Equation sensei 2</h1>
+            <div class="logo-container">
+                <img src="../../assets/logo.svg" alt="logo">
+            </div>
             <div class="form">
                 <Form @submit="handleSubmit" :validation-schema="schema">
                     <div class="form-control">
@@ -18,6 +20,9 @@
                         Login
                     </button>
                 </Form>
+                <div class="register-container">
+                    <p>Dont have an account <a href="">Register</a></p>
+                </div>
             </div>
         </div>
     </div>
@@ -47,6 +52,7 @@ export default {
     },
     methods: {
         handleSubmit(values) {
+            console.log(config.baseUrl);
             axios({
                 method: "post",
                 url: `${config.baseUrl}/api/login`,
@@ -69,10 +75,29 @@ export default {
 
 <style lang="scss" scoped>
 .main-container {
+    box-sizing: border-box;
     width: 100%;
     height: 100vh;
     margin: 0;
     background: $pale-cream;
+    padding: 20vh 30px 30px 30px;
+
+    .register-container{
+        text-align: center;
+        margin-top: 20px;
+        box-sizing: border-box;
+    }
+
+    .logo-container{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        img{
+           width: 65%;
+        }
+        margin-bottom: 30px;
+        box-sizing: border-box;
+    }
 
     .head-Text {
         text-align: center;
@@ -84,13 +109,17 @@ export default {
         padding: 30px;
         display: flex;
         flex-direction: column;
-        width: 400px;
         margin: 0 auto;
-
+        box-sizing: border-box;
+        max-width: 500px;
+        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+        border: solid 3px $light-red;
+        border-radius: 10px;
         .form {
-
+            box-sizing: border-box;
             .form-control {
                 width: 95%;
+                box-sizing: border-box;
 
                 label {
                     color: $light-red;
