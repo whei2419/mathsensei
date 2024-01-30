@@ -93,9 +93,9 @@ export default {
         justify-content: center;
         align-items: center;
         img{
-           width: 65%;
+           width: 80%;
         }
-        margin-bottom: 30px;
+        margin-bottom: 10px;
         box-sizing: border-box;
     }
 
