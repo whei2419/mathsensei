@@ -6,47 +6,58 @@
                     Menu
                 </button>
                 <div class="time-container">
-                    <p class="time">{{ timer }}</p>
+                    <p class="time">{{ formattedTime }}</p>
                 </div>
                 <button class="button primary  font-size-small" @click="showAnswear">
                     Hint
                 </button>
             </div>
-            <h1 class="question-header">Equation {{ questionIndex + 1 }}</h1>
-            <h2 class="problem-name">
-                {{ currentQuestion[questionIndex].name }}
-            </h2>
-            <p class="text-danger" :class="{ 'show-error': showError.class }">{{ showError.value }}</p>
+            <div v-if="!isCompleted" class="question-section">
+                <h1 class="question-header">Equation {{ questionIndex + 1 }}</h1>
+                <h2 class="problem-name">
+                    {{ currentQuestion[questionIndex].name }}
+                </h2>
+                <p class="text-danger" :class="{ 'show-error': showError.class }">{{ showError.value }}</p>
 
-            <div v-for="(step, index) in currentQuestion" :key="index">
-                <div v-if="index === questionIndex">
-                    <div class="step-container" v-for="(step, index) in currentQuestion[index].step" :key="index">
-                        <div v-if="currentStep >= index" class="step-count">
-                            <input :ref="setRefName(questionIndex, 'left', index)" type="text" @input="handleChange" />
-                            <span>=</span>
-                            <input :ref="setRefName(questionIndex, 'right', index)" @input="handleChange" />
+                <div v-for="(step, index) in currentQuestion" :key="index">
+                    <div v-if="index === questionIndex">
+                        <div class="step-container" v-for="(step, index) in currentQuestion[index].step" :key="index">
+                            <div v-if="currentStep >= index" class="step-count">
+                                <input :ref="setRefName(questionIndex, 'left', index)" type="text" @input="handleChange" />
+                                <span>=</span>
+                                <input :ref="setRefName(questionIndex, 'right', index)" @input="handleChange" />
+                            </div>
                         </div>
                     </div>
                 </div>
+                <div class="button-container">
+                    <button v-if="!isNext" class="check-button button primary button-full font-size-small"
+                        @click="handleAnswear">
+                        Check
+                    </button>
+                    <button v-else class="check-button button primary button-full font-size-small" @click="handleNext">
+                        Next
+                    </button>
+                    <button v-if="!isNext" class="skip-btn button secondary button-full font-size-small"
+                        @click="handleSkip">
+                        Skip
+                    </button>
+                </div>
             </div>
-            <div class="button-container">
-                <button v-if="!isNext" class="check-button button primary button-full font-size-small"
-                    @click="handleAnswear">
-                    Check
-                </button>
-                <button v-else class="check-button button primary button-full font-size-small" @click="handleNext">
-                    Next
-                </button>
-                <button v-if="!isNext" class="skip-btn button secondary button-full font-size-small" @click="handleSkip">
-                    Skip
+            <div v-else class="completed">
+                <h1>Thank you for playing the game</h1>
+                <p>Your Score is:</p>
+                <h2 class="score-text">30</h2>
+                <button class="button primary button-full font-size-small" @click="goHome">
+                    Go home
                 </button>
             </div>
-
         </div>
     </div>
 </template>
 
 <script>
+import config from "../utils.js";
 export default {
     name: "Game",
     data() {
@@ -58,19 +69,23 @@ export default {
                 class: false,
                 value: ''
             },
+            isCompleted: false,
             timer: 0,
             showSkip: true,
+            gameId: null,
+            formattedTime: null,
             gameData: {
-                gameID: null,
+                gameID: this.gameId,
                 questionID: null,
-                randomTap: null,
-                hint: null,
-                wrongTry: null,
-                correctTry: null,
-                skip: null,
-                time_spent: null,
+                randomTaps: 0,
+                hint: 0,
+                wrongTry: 0,
+                correctTry: 0,
+                skip: 0,
+                time_spent: 0,
             },
-            isNext: false
+            isNext: false,
+            lastQuestionTime: 0,
         };
     },
     computed: {
@@ -123,6 +138,42 @@ export default {
         },
     },
     methods: {
+        goHome(){
+            this.$router.push('/home');
+        },
+        submit() {
+            const token = localStorage.getItem("token");
+            this.gameData.questionID = this.sampleData[this.questionIndex].id;
+            this.gameData.time_spent = this.remainingSeconds;
+            this.lastQuestionTime = this.timer;
+            this.gameData.time_spent = 300 - this.lastQuestionTime;
+            axios({
+                method: "post",
+                url: `${config.baseUrl}/api/game/result`,
+                data: {
+                    game_id: this.gameData.gameID,
+                    question_id: this.gameData.questionID,
+                    random_tap: this.gameData.randomTaps,
+                    hint_used: this.gameData.hint,
+                    wrong_try: this.gameData.wrongTry,
+                    correct_try: this.gameData.correctTry,
+                    skip: this.gameData.skip,
+                    time_spent: this.gameData.time_spent,
+                },
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+
+            }).then((res) => {
+                this.gameData.questionID = null;
+                this.gameData.randomTaps = 0;
+                this.gameData.hint = 0;
+                this.gameData.wrongTry = 0;
+                this.gameData.correctTry = 0;
+                this.gameData.skip = 0;
+                this.gameData.time_spent = 0;
+            });
+        },
         randomTap(e) {
             if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT') {
                 return;
@@ -130,11 +181,22 @@ export default {
             this.gameData.randomTap++;
         },
         startTimer() {
-            if (this.timer === 0) {
+            if (this.timer > 0) {
                 return;
             }
+
             const intervalId = setInterval(() => {
+                let minutes = Math.floor(this.timer / 60);
+                let seconds = this.timer % 60;
+
+                // Format the time as "m:ss"
+                let formattedTime = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
+                // Update the timer value with the formatted time
+                this.formattedTime = formattedTime;
+
                 this.timer--;
+
                 if (this.timer <= 0) {
                     clearInterval(intervalId);
                 }
@@ -168,14 +230,14 @@ export default {
             }
         },
         handleNext() {
+            this.submit()
             if (this.isLast) {
+                this.isCompleted = true;
 
             } else {
                 this.currentStep = 0;
                 this.questionIndex++;
             }
-
-            console.log(this.gameData);
         },
         handleAnswear() {
             const currentStepLeft = this.setRefName(this.questionIndex, 'left', this.currentStep);
@@ -236,7 +298,12 @@ export default {
             this.sampleData = questionsFromLocalStorage;
         }
         this.timer = this.remainingSeconds;
+        this.formattedTime = this.timer;
+        this.gameId = localStorage.getItem('game_id');
+        this.gameData.gameID = this.gameId;
+
         this.startTimer();
+        console.log(this.timer);
         console.log(this.sampleData);
     },
 };
@@ -248,6 +315,26 @@ export default {
     height: 100vh;
     margin: 0;
     background: $pale-cream;
+
+    .completed{
+        margin-top: 60px;
+        text-align: center;
+
+        h1{
+            margin-bottom: 10px;
+            margin-top: 20px;
+            color:$light-red;
+        }
+
+        p {
+            font-size: $font-medium;
+        }
+        .score-text {
+            font-size: $font-large;
+            color:$light-red;
+            margin-bottom: 20px;
+        }
+    }
 
     .text-danger {
         color: red;
