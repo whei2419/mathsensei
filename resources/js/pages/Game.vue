@@ -3,10 +3,10 @@
         <div class="game-information">
             <div class="header-game">
                 <button class="button primary font-size-small">Menu</button>
-                <div class="time-container">
+                <div v-if="!isCompleted" class="time-container">
                     <p class="time">{{ formattedTime }}</p>
                 </div>
-                <button class="button primary font-size-small" @click="showAnswear">
+                <button v-if="!isCompleted" class="button primary font-size-small" @click="showAnswear">
                     Hint
                 </button>
             </div>
@@ -199,8 +199,9 @@ export default {
             }
             this.gameData.randomTap++;
         },
+
         startTimer() {
-            if (this.timer > 0) {
+            if (this.timer < 0) {
                 return;
             }
 
@@ -219,6 +220,8 @@ export default {
 
                 if (this.timer <= 0) {
                     clearInterval(intervalId);
+                    this.submit();
+                    this.isCompleted = true;
                 }
             }, 1000);
         },
@@ -302,7 +305,6 @@ export default {
                 }
             }
 
-            console.log(filteredKey);
             if (
                 firstLeftInput.value === null ||
                 firstLeftInput.value === "" ||
@@ -466,9 +468,17 @@ export default {
     margin: 0;
     background: $pale-cream;
 
+    .question-section{
+        padding: 30px 20px;
+    }
+
     .completed {
         margin-top: 60px;
         text-align: center;
+        padding: 40px 30px;
+        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+        border: solid 3px $light-red;
+        border-radius: 10px;
 
         h1 {
             margin-bottom: 10px;
@@ -498,8 +508,8 @@ export default {
         padding: 0 30px 30px;
         max-width: 500px;
         margin: 0 auto;
-        height: 100%;
         position: relative;
+
 
         .question-header {
             font-size: $font-large;
@@ -542,7 +552,7 @@ export default {
             display: flex;
             gap: 20px;
             flex-direction: row;
-            margin-top: 30px;
+            margin-top: 50px;
 
             button:first-child {
                 flex: 80%;

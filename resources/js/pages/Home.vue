@@ -90,8 +90,12 @@ export default {
     .main {
         max-width: 500px;
         margin: 0 auto;
+        margin-top: 20px;
         padding: 1rem;
         box-sizing: border-box;
+        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+        border: solid 3px $light-red;
+        border-radius: 10px;
     }
     .logo-container{
         display: flex;
