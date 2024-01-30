@@ -1,5 +1,5 @@
 <template>
-    <div class="game-container">
+    <div class="game-container" @click="randomTap">
         <div class="game-information">
             <div class="header-game">
                 <button class=" button primary  font-size-small">
@@ -9,7 +9,7 @@
                     <p class="time">{{ timer }}</p>
                 </div>
                 <button class="button primary  font-size-small" @click="showAnswear">
-                    Help
+                    Hint
                 </button>
             </div>
             <h1 class="question-header">Equation {{ questionIndex + 1 }}</h1>
@@ -21,20 +21,27 @@
             <div v-for="(step, index) in currentQuestion" :key="index">
                 <div v-if="index === questionIndex">
                     <div class="step-container" v-for="(step, index) in currentQuestion[index].step" :key="index">
-                        <div v-if="currentStep == index || isDone(index) === true" class="step-count"
-                            :class="{ 'is-done': isDone(index) }">
+                        <div v-if="currentStep >= index" class="step-count">
                             <input :ref="setRefName(questionIndex, 'left', index)" type="text" @input="handleChange" />
                             <span>=</span>
                             <input :ref="setRefName(questionIndex, 'right', index)" @input="handleChange" />
                         </div>
-
                     </div>
                 </div>
             </div>
+            <div class="button-container">
+                <button v-if="!isNext" class="check-button button primary button-full font-size-small"
+                    @click="handleAnswear">
+                    Check
+                </button>
+                <button v-else class="check-button button primary button-full font-size-small" @click="handleNext">
+                    Next
+                </button>
+                <button v-if="!isNext" class="skip-btn button secondary button-full font-size-small" @click="handleSkip">
+                    Skip
+                </button>
+            </div>
 
-            <button class="check-button button primary button-full font-size-small" @click="handleAnswear">
-                {{ buttonText }}
-            </button>
         </div>
     </div>
 </template>
@@ -52,9 +59,41 @@ export default {
                 value: ''
             },
             timer: 0,
+            showSkip: true,
+            gameData: {
+                gameID: null,
+                questionID: null,
+                randomTap: null,
+                hint: null,
+                wrongTry: null,
+                correctTry: null,
+                skip: null,
+                time_spent: null,
+            },
+            isNext: false
         };
     },
     computed: {
+        isLast() {
+            console.log('index: ', this.questionIndex, "index", this.sampleData.length);
+
+            if (this.sampleData.length === this.questionIndex + 1) {
+                this.isNext = true;
+                return true;
+            } else {
+                this.isNext = false;
+                return false;
+
+            }
+
+        },
+        isLastStep() {
+            if (this.sampleData[this.questionIndex].step.length === this.currentStep + 1) {
+                return true;
+            } else {
+                return false;
+            }
+        },
         remainingSeconds() {
             const endTimeString = localStorage.getItem('endTime');
             if (!endTimeString) return 0;
@@ -81,12 +120,17 @@ export default {
             } else {
                 return "Check";
             }
-
         },
     },
     methods: {
+        randomTap(e) {
+            if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT') {
+                return;
+            }
+            this.gameData.randomTap++;
+        },
         startTimer() {
-            if(this.timer === 0){
+            if (this.timer === 0) {
                 return;
             }
             const intervalId = setInterval(() => {
@@ -95,13 +139,6 @@ export default {
                     clearInterval(intervalId);
                 }
             }, 1000);
-        },
-        isDone(index) {
-            if (this.currentStep > index) {
-                return true;
-            } else {
-                return false;
-            }
         },
         setRefName(questionIndex, side, index) {
             return `${questionIndex}${side}${index}`;
@@ -113,22 +150,34 @@ export default {
             let rightInput = this.$refs[currentStepRight];
             let currentStepData = this.currentQuestion[this.questionIndex].step[this.currentStep];
 
-            console.log(currentStepData);
             leftInput[0].value = currentStepData.left;
             rightInput[0].value = currentStepData.right;
-         },
+            this.gameData.hint++;
+        },
         handleChange(e) {
             e.target.classList.remove("wrong-answer");
             this.showError.class = false;
             this.showError.value = '';
         },
-        handleAnswear() {
-            if (this.currentStep === this.stepCount) {
+        handleSkip() {
+            if (this.isLast) {
+                this.showSkip = false;
+            } else {
                 this.questionIndex++;
+                this.gameData.skip++;
+            }
+        },
+        handleNext() {
+            if (this.isLast) {
+
+            } else {
                 this.currentStep = 0;
-                return;
+                this.questionIndex++;
             }
 
+            console.log(this.gameData);
+        },
+        handleAnswear() {
             const currentStepLeft = this.setRefName(this.questionIndex, 'left', this.currentStep);
             const currentStepRight = this.setRefName(this.questionIndex, 'right', this.currentStep);
             const leftInput = this.$refs[currentStepLeft];
@@ -144,18 +193,27 @@ export default {
                     leftInput[0].classList.remove("shake");
                     rightInput[0].classList.remove("shake");
                 }, 500);
+                this.gameData.wrongTry++;
                 return;
             }
             if (leftInput[0].value === currentStepData.left && rightInput[0].value === currentStepData.right) {
                 if (this.currentStep <= this.stepCount) {
-                    this.currentStep++;
-                    console.log(this.currentStep);
+
+                    leftInput[0].classList.add("is-done");
+                    rightInput[0].classList.add("is-done");
+                    if (this.isLastStep) {
+                        this.isNext = true;
+                    } else {
+                        this.currentStep++;
+                    }
+                    this.gameData.correctTry++;
                 }
             } else {
                 this.showError.class = true;
                 this.showError.value = "Please enter the right answer";
                 leftInput[0].classList.add("wrong-answer", "shake");
                 rightInput[0].classList.add("wrong-answer", "shake");
+                this.gameData.wrongTry++;
 
                 setTimeout(() => {
                     leftInput[0].classList.remove("shake");
@@ -163,12 +221,23 @@ export default {
                 }, 500);
             }
 
+
+
         }
     },
     created() {
-        this.sampleData = JSON.parse(localStorage.getItem('question'));
+        let questionsFromLocalStorage = JSON.parse(localStorage.getItem('question'));
+
+        if (questionsFromLocalStorage) {
+
+            questionsFromLocalStorage.forEach(question => {
+                question.skip = false;
+            });
+            this.sampleData = questionsFromLocalStorage;
+        }
         this.timer = this.remainingSeconds;
         this.startTimer();
+        console.log(this.sampleData);
     },
 };
 </script>
@@ -231,6 +300,21 @@ export default {
             }
         }
 
+        .button-container {
+            display: flex;
+            gap: 20px;
+            flex-direction: row;
+            margin-top: 30px;
+
+            button:first-child {
+                flex: 80%;
+            }
+
+            button:last-child {
+                flex: 20%;
+            }
+        }
+
         .step-container {
             box-sizing: border-box;
 
@@ -242,10 +326,8 @@ export default {
             }
 
             .is-done {
-                input {
-                    background-color: $pale-cream ;
-                    color: $light-red;
-                }
+                background-color: $pale-cream ;
+                color: $light-red;
             }
 
             span {
