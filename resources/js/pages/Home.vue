@@ -1,10 +1,14 @@
 <template>
     <div class="game-container">
         <div class="main">
-            <h1>Equation sensei 2</h1>
+            <div class="logo-container">
+                <img src="../../assets/logo.svg" alt="logo">
+            </div>
             <div class="start-container">
+                <p class="home-text">Welcome to our game press the button to start</p>
+                <img src="../../assets/highlight.svg" alt="">
                 <button @click="handleStart" class="solve-now-btn button primary button-full font-size-small">
-                    Solve now
+                    <span>Solve now</span> <img src="../../assets/triangle.svg" alt="">
                 </button>
             </div>
         </div>
@@ -81,18 +85,60 @@ export default {
 
 <style lang="scss" scoped>
 .game-container {
+    box-sizing: border-box;
+    padding-top: 30px;
     .main {
-        width: 100%;
+        max-width: 500px;
         margin: 0 auto;
-        padding: 3rem;
+        padding: 1rem;
+        box-sizing: border-box;
+    }
+    .logo-container{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-sizing: border-box;
+        img{
+           width: 80%;
+        }
+        margin-bottom: 10px;
         box-sizing: border-box;
     }
 
     .start-container {
         width: 100%;
+        border-radius: 10px;
+        padding: 20px 20px 40px 20px;
+        text-align: center;
+        background-color: $pale-background;
+        box-sizing: border-box;
+
+        .home-text{
+            font-size: 1.5rem;
+            color:$pale-text;
+            margin-bottom: 20px;
+        }
+        img {
+            margin-bottom: 20px;
+            width: 70%;
+        }
 
         .solve-now-btn {
+            box-sizing: border-box;
             widows: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+
+            span {
+                font-size: 1.5rem;
+            }
+
+            img {
+                width: 25px;
+                margin-bottom: 0;
+            }
         }
     }
 }

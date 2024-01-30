@@ -2,30 +2,47 @@
     <div class="game-container" @click="randomTap">
         <div class="game-information">
             <div class="header-game">
-                <button class=" button primary  font-size-small">
-                    Menu
-                </button>
+                <button class="button primary font-size-small">Menu</button>
                 <div class="time-container">
                     <p class="time">{{ formattedTime }}</p>
                 </div>
-                <button class="button primary  font-size-small" @click="showAnswear">
+                <button class="button primary font-size-small" @click="showAnswear">
                     Hint
                 </button>
             </div>
             <div v-if="!isCompleted" class="question-section">
-                <h1 class="question-header">Equation {{ questionIndex + 1 }}</h1>
+                <h1 class="question-header">
+                    Equation {{ questionIndex + 1 }}
+                </h1>
                 <h2 class="problem-name">
                     {{ currentQuestion[questionIndex].name }}
                 </h2>
-                <p class="text-danger" :class="{ 'show-error': showError.class }">{{ showError.value }}</p>
+                <p class="text-danger" :class="{ 'show-error': showError.class }">
+                    {{ showError.value }}
+                </p>
+
+                <div v-if="isFirstInput" class="step-container">
+                    <div class="step-count">
+                        <input ref="left" v-model="firstLeft" type="text" @input="handleChange" />
+                        <span>=</span>
+                        <input ref="right" v-model="firstRight" @input="handleChange" />
+                    </div>
+                </div>
 
                 <div v-for="(step, index) in currentQuestion" :key="index">
                     <div v-if="index === questionIndex">
-                        <div class="step-container" v-for="(step, index) in currentQuestion[index].step" :key="index">
+                        <div class="step-container" v-for="(step, index) in currentQuestion[index].solutions[solutionKey]"
+                            :key="index">
                             <div v-if="currentStep >= index" class="step-count">
-                                <input :ref="setRefName(questionIndex, 'left', index)" type="text" @input="handleChange" />
+                                <input :ref="setRefName(questionIndex, 'left', index)
+                                    " type="text" @input="handleChange" />
                                 <span>=</span>
-                                <input :ref="setRefName(questionIndex, 'right', index)" @input="handleChange" />
+                                <input :ref="setRefName(
+                                    questionIndex,
+                                    'right',
+                                    index
+                                )
+                                    " @input="handleChange" />
                             </div>
                         </div>
                     </div>
@@ -62,12 +79,15 @@ export default {
     name: "Game",
     data() {
         return {
+            isFirstInput: true,
+            firstLeft: null,
+            firstRight: null,
             questionIndex: 0,
             currentStep: 0,
             sampleData: [],
             showError: {
                 class: false,
-                value: ''
+                value: "",
             },
             isCompleted: false,
             timer: 0,
@@ -86,35 +106,34 @@ export default {
             },
             isNext: false,
             lastQuestionTime: 0,
+            solutionKey: null,
         };
     },
     computed: {
         isLast() {
-            console.log('index: ', this.questionIndex, "index", this.sampleData.length);
-
             if (this.sampleData.length === this.questionIndex + 1) {
                 this.isNext = true;
                 return true;
             } else {
                 this.isNext = false;
                 return false;
-
             }
-
         },
         isLastStep() {
-            if (this.sampleData[this.questionIndex].step.length === this.currentStep + 1) {
+            if (
+                this.currentQuestion[this.questionIndex].solutions[this.solutionKey].length ===
+                this.currentStep + 1
+            ) {
                 return true;
             } else {
                 return false;
             }
         },
         remainingSeconds() {
-            const endTimeString = localStorage.getItem('endTime');
+            const endTimeString = localStorage.getItem("endTime");
             if (!endTimeString) return 0;
 
             const endTime = new Date(endTimeString);
-
 
             const currentTime = new Date();
             const remainingMilliseconds = Math.max(0, endTime - currentTime);
@@ -123,7 +142,8 @@ export default {
             return remainingSeconds;
         },
         stepCount() {
-            let stepCount = this.currentQuestion[this.questionIndex].step.length - 1;
+            let stepCount =
+                this.currentQuestion[this.questionIndex].solutions[this.solutionKey].length - 1;
             return stepCount;
         },
         currentQuestion() {
@@ -131,15 +151,15 @@ export default {
         },
         buttonText() {
             if (this.currentStep > this.stepCount) {
-                return 'Next'
+                return "Next";
             } else {
                 return "Check";
             }
         },
     },
     methods: {
-        goHome(){
-            this.$router.push('/home');
+        goHome() {
+            this.$router.push("/home");
         },
         submit() {
             const token = localStorage.getItem("token");
@@ -163,7 +183,6 @@ export default {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
-
             }).then((res) => {
                 this.gameData.questionID = null;
                 this.gameData.randomTaps = 0;
@@ -175,7 +194,7 @@ export default {
             });
         },
         randomTap(e) {
-            if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT') {
+            if (e.target.tagName === "BUTTON" || e.target.tagName === "INPUT") {
                 return;
             }
             this.gameData.randomTap++;
@@ -190,7 +209,8 @@ export default {
                 let seconds = this.timer % 60;
 
                 // Format the time as "m:ss"
-                let formattedTime = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                let formattedTime = `${minutes}:${seconds < 10 ? "0" : ""
+                    }${seconds}`;
 
                 // Update the timer value with the formatted time
                 this.formattedTime = formattedTime;
@@ -206,20 +226,44 @@ export default {
             return `${questionIndex}${side}${index}`;
         },
         showAnswear() {
-            const currentStepLeft = this.setRefName(this.questionIndex, 'left', this.currentStep);
-            const currentStepRight = this.setRefName(this.questionIndex, 'right', this.currentStep);
-            let leftInput = this.$refs[currentStepLeft];
-            let rightInput = this.$refs[currentStepRight];
-            let currentStepData = this.currentQuestion[this.questionIndex].step[this.currentStep];
+            const currentStepLeft = this.setRefName(
+                this.questionIndex,
+                "left",
+                this.currentStep
+            );
+            const currentStepRight = this.setRefName(
+                this.questionIndex,
+                "right",
+                this.currentStep
+            );
 
-            leftInput[0].value = currentStepData.left;
-            rightInput[0].value = currentStepData.right;
-            this.gameData.hint++;
+            if (this.solutionKey === null) {
+                const firstLeftInput = this.$refs.left;
+                const firstRightInput = this.$refs.right;
+                let currentStepData =
+                    this.currentQuestion[this.questionIndex].solutions[1][this.currentStep];
+                firstLeftInput.value = currentStepData.left;
+                firstRightInput.value = currentStepData.right;
+                this.firstLeft = currentStepData.left;
+                this.firstRight = currentStepData.right;
+            } else {
+                let currentStepData =
+                    this.currentQuestion[this.questionIndex].solutions[this.solutionKey][this.currentStep];
+                    this.$nextTick(() => {
+                let leftInput = this.$refs[currentStepLeft];
+                let rightInput = this.$refs[currentStepRight];
+
+                leftInput[0].value = currentStepData.left;
+                rightInput[0].value = currentStepData.right;
+                this.gameData.hint++;
+            });
+            }
+
         },
         handleChange(e) {
             e.target.classList.remove("wrong-answer");
             this.showError.class = false;
-            this.showError.value = '';
+            this.showError.value = "";
         },
         handleSkip() {
             if (this.isLast) {
@@ -230,23 +274,129 @@ export default {
             }
         },
         handleNext() {
-            this.submit()
+            this.submit();
             if (this.isLast) {
                 this.isCompleted = true;
-
             } else {
                 this.currentStep = 0;
                 this.questionIndex++;
+                this.firstLeft = null;
+                this.firstRight = null;
+                this.solutionKey = null;
+                this.isFirstInput = true;
             }
         },
+        checkSolutionKey() {
+            const firstLeftInput = this.$refs.left;
+            const firstRightInput = this.$refs.right;
+
+            let solution = this.sampleData[this.questionIndex].solutions;
+            let filteredKey = null;
+
+            for (let key in solution) {
+                if (solution.hasOwnProperty(key)) {
+                    if (solution[key].some(obj => obj.left === this.firstLeft && obj.right === this.firstRight)) {
+                        filteredKey = key;
+                        break;
+                    }
+                }
+            }
+
+            console.log(filteredKey);
+            if (
+                firstLeftInput.value === null ||
+                firstLeftInput.value === "" ||
+                firstRightInput.value === null ||
+                firstRightInput.value === ""
+            ) {
+                this.showError.class = true;
+                this.showError.value = "Please complete your answer";
+                firstLeftInput.classList.add("wrong-answer", "shake");
+                firstRightInput.classList.add("wrong-answer", "shake");
+                setTimeout(() => {
+                    firstLeftInput.classList.remove("shake");
+                    firstRightInput.classList.remove("shake");
+                }, 500);
+                this.gameData.wrongTry++;
+                return;
+            } else if (filteredKey == null) {
+                this.showError.class = true;
+                this.showError.value = "Please input the correct answer";
+                firstLeftInput.classList.add("wrong-answer", "shake");
+                firstRightInput.classList.add("wrong-answer", "shake");
+                setTimeout(() => {
+                    firstLeftInput.classList.remove("shake");
+                    firstRightInput.classList.remove("shake");
+                }, 500);
+                this.gameData.wrongTry++;
+                return;
+            } else {
+                this.isFirstInput = false;
+                let currentStepData =
+                    this.currentQuestion[this.questionIndex].solutions[filteredKey][this.currentStep];
+                this.solutionKey = filteredKey;
+                const currentStepLeft = this.setRefName(
+                    this.questionIndex,
+                    "left",
+                    0
+                );
+                const currentStepRight = this.setRefName(
+                    this.questionIndex,
+                    "right",
+                    0
+                );
+
+                console.log(this.currentStep);
+
+                this.$nextTick(() => {
+                    console.log(currentStepData);
+                    const leftInput = this.$refs[currentStepLeft];
+                    const rightInput = this.$refs[currentStepRight];
+
+                    console.log(leftInput);
+
+
+                    leftInput[0].value = currentStepData.left
+                    rightInput[0].value = currentStepData.right
+                    leftInput[0].classList.add("is-done");
+                    rightInput[0].classList.add("is-done");
+                    this.currentStep++;
+                });
+
+            }
+        },
+
         handleAnswear() {
-            const currentStepLeft = this.setRefName(this.questionIndex, 'left', this.currentStep);
-            const currentStepRight = this.setRefName(this.questionIndex, 'right', this.currentStep);
+
+            if (this.currentStep === 0) {
+                this.checkSolutionKey();
+                console.log('here');
+                return;
+            }
+
+            console.log('here2');
+
+            const currentStepLeft = this.setRefName(
+                this.questionIndex,
+                "left",
+                this.currentStep
+            );
+            const currentStepRight = this.setRefName(
+                this.questionIndex,
+                "right",
+                this.currentStep
+            );
             const leftInput = this.$refs[currentStepLeft];
             const rightInput = this.$refs[currentStepRight];
-            let currentStepData = this.currentQuestion[this.questionIndex].step[this.currentStep];
+            let currentStepData =
+            this.currentQuestion[this.questionIndex].solutions[this.solutionKey][this.currentStep];
 
-            if (leftInput[0].value === null || leftInput[0].value === '' || rightInput[0].value === null || rightInput[0].value === '') {
+            if (
+                leftInput[0].value === null ||
+                leftInput[0].value === "" ||
+                rightInput[0].value === null ||
+                rightInput[0].value === ""
+            ) {
                 this.showError.class = true;
                 this.showError.value = "Please complete your answer";
                 leftInput[0].classList.add("wrong-answer", "shake");
@@ -258,9 +408,11 @@ export default {
                 this.gameData.wrongTry++;
                 return;
             }
-            if (leftInput[0].value === currentStepData.left && rightInput[0].value === currentStepData.right) {
+            if (
+                leftInput[0].value === currentStepData.left &&
+                rightInput[0].value === currentStepData.right
+            ) {
                 if (this.currentStep <= this.stepCount) {
-
                     leftInput[0].classList.add("is-done");
                     rightInput[0].classList.add("is-done");
                     if (this.isLastStep) {
@@ -282,24 +434,22 @@ export default {
                     rightInput[0].classList.remove("shake");
                 }, 500);
             }
-
-
-
-        }
+        },
     },
     created() {
-        let questionsFromLocalStorage = JSON.parse(localStorage.getItem('question'));
+        let questionsFromLocalStorage = JSON.parse(
+            localStorage.getItem("question")
+        );
 
         if (questionsFromLocalStorage) {
-
-            questionsFromLocalStorage.forEach(question => {
+            questionsFromLocalStorage.forEach((question) => {
                 question.skip = false;
             });
             this.sampleData = questionsFromLocalStorage;
         }
         this.timer = this.remainingSeconds;
         this.formattedTime = this.timer;
-        this.gameId = localStorage.getItem('game_id');
+        this.gameId = localStorage.getItem("game_id");
         this.gameData.gameID = this.gameId;
 
         this.startTimer();
@@ -316,22 +466,23 @@ export default {
     margin: 0;
     background: $pale-cream;
 
-    .completed{
+    .completed {
         margin-top: 60px;
         text-align: center;
 
-        h1{
+        h1 {
             margin-bottom: 10px;
             margin-top: 20px;
-            color:$light-red;
+            color: $light-red;
         }
 
         p {
             font-size: $font-medium;
         }
+
         .score-text {
             font-size: $font-large;
-            color:$light-red;
+            color: $light-red;
             margin-bottom: 20px;
         }
     }
@@ -413,8 +564,9 @@ export default {
             }
 
             .is-done {
-                background-color: $pale-cream ;
+                background-color: $pale-cream;
                 color: $light-red;
+                pointer-events: none;
             }
 
             span {
