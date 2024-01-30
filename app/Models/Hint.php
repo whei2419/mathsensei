@@ -15,6 +15,7 @@ class Hint extends Model
         'question_id',
         'left',
         'right',
+        'solution_number'
     ];
 
     public function question()

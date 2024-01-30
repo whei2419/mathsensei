@@ -24,6 +24,10 @@ class HintRelationManager extends RelationManager
                 Forms\Components\TextInput::make('right')
                     ->required()
                     ->maxLength(255),
+                Forms\Components\TextInput::make('solution_number')
+                    ->label('Solution Number')
+                    ->required()
+                    ->maxLength(255),
             ]);
     }
 

@@ -9,9 +9,30 @@ class QuestionController extends Controller
 {
     public function get(Request $request)
     {
-        $question = Question::get();
+        $questionsWithHints = Question::with('hints')->get();
 
-        return response()->json(['questions'=>$question], 200);
+        // Transform the data
+        $transformedData = $questionsWithHints->map(function ($question) {
+            return [
+                'id' => $question->id,
+                'name' => $question->name, // Assuming name is an attribute of the Question model
+                'level' => [
+                    'id' => $question->level->id,
+                    'name' => $question->level->name,
+                ],
+                'solutions' => $question->hints->groupBy('solution_number')->map(function ($hints) {
+                    return $hints->map(function ($hint) {
+                        return [
+                            'id' => $hint->id, 
+                            'left' => $hint->left, 
+                            'right' => $hint->right, 
+                        ];
+                    });
+                }),
+            ];
+        });
+
+        return response()->json(['questions'=>$transformedData], 200);
 
     }
 }

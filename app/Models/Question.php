@@ -16,7 +16,7 @@ class Question extends Model
         'level_id',
     ];
 
-    protected $appends = ['level','step'];
+    protected $appends = ['level'];
 
     protected $hidden = ['hints'];
 
@@ -45,5 +45,6 @@ class Question extends Model
     {
         return $this->hasMany(Result::class);
     }
+
 
 }
