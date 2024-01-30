@@ -1,5 +1,5 @@
 import { createRouter, createWebHashHistory } from "vue-router";
-import login from '../pages/login.vue';
+import Login from '../pages/Login.vue';
 import Game from '../pages/Game.vue';
 import Home from '../pages/Home.vue';
 import Index from '../index.vue'
@@ -12,7 +12,7 @@ const routes = [
     },
     {
         path:'/login',
-        component:login,
+        component:Login,
         name:'Login'
     },
     {
