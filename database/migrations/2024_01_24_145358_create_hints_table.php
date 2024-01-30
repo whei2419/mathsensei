@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('left');
             $table->string('right');
             $table->unsignedBigInteger('question_id');
+            $table->string('solution_number');
+
             $table->timestamps();
 
             $table->index(["question_id"], 'questions-hints');
