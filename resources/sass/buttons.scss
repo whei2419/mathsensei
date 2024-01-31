@@ -19,9 +19,8 @@
         color: $white;
     }
     &.transparent {
-        background-color: $white;
-        color: $red;
-        border: 3px solid $red;
+        background-color: $red;
+        color: $white;
     }
 
     &.font-size-small {

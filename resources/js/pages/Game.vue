@@ -3,12 +3,11 @@
         <particles></particles>
         <div class="game-information">
             <div class="header-game">
-                <button class="button primary font-size-small">Menu</button>
-                <div v-if="!isCompleted" class="time-container">
-                    <p class="time">{{ formattedTime }}</p>
+                <div v-if="!isCompleted || !timer === 0" class="time-container">
+                    <img src="image/clock.svg" alt=""><p class="time">{{ formattedTime }}</p>
                 </div>
-                <button v-if="!isCompleted" class="button primary font-size-small" @click="showAnswear">
-                    Hint
+                <button v-if="!isCompleted" class="hint-btn button primary font-size-small" @click="showAnswear">
+                    <span>Hint</span> <img src="image/bulb.svg" alt="">
                 </button>
             </div>
             <div v-if="!isCompleted" class="question-section">
@@ -65,9 +64,9 @@
             <div v-else class="completed">
                 <h1>Thank you for playing the game</h1>
                 <p>Your Score is:</p>
-                <h2 class="score-text">30</h2>
+                <h2 class="score-text">{{ score }}</h2>
                 <button class="button primary button-full font-size-small" @click="goHome">
-                    Go home
+                    Return home
                 </button>
             </div>
         </div>
@@ -109,6 +108,8 @@ export default {
                 skip: 0,
                 time_spent: 0,
             },
+            score:0,
+            timeSpent:0,
             isNext: false,
             lastQuestionTime: 0,
             solutionKey: null,
@@ -163,15 +164,40 @@ export default {
         },
     },
     methods: {
+        clearData(){
+            localStorage.removeItem("startTime");
+            localStorage.removeItem("endTime");
+            localStorage.removeItem("game_id");
+            localStorage.removeItem("question");
+            localStorage.removeItem("isStart");
+        },
         goHome() {
+            this.clearData();
             this.$router.push("/home");
+        },
+        getResult(){
+            const token = localStorage.getItem("token");
+            const gameID = localStorage.getItem("game_id");
+            axios({
+                method: "post",
+                url: `${config.baseUrl}/api/game/score`,
+                data : {
+                    game_id:gameID
+                },
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }).then((res) => {
+                this.score = res.data.score;
+               this.isCompleted = true;
+            });
         },
         submit() {
             const token = localStorage.getItem("token");
             this.gameData.questionID = this.sampleData[this.questionIndex].id;
             this.gameData.time_spent = this.remainingSeconds;
             this.lastQuestionTime = this.timer;
-            this.gameData.time_spent = 300 - this.lastQuestionTime;
+            this.gameData.time_spent = this.timeSpent;
             axios({
                 method: "post",
                 url: `${config.baseUrl}/api/game/result`,
@@ -196,6 +222,13 @@ export default {
                 this.gameData.correctTry = 0;
                 this.gameData.skip = 0;
                 this.gameData.time_spent = 0;
+                this.timeSpent = 0;
+
+                if(this.isLast ){
+                    this.getResult()
+                }else if(this.timer <= 0){
+                    this.getResult()
+                }
             });
         },
         randomTap(e) {
@@ -206,7 +239,7 @@ export default {
         },
 
         startTimer() {
-            if (this.timer < 0) {
+            if (!this.timer === 0) {
                 return;
             }
 
@@ -220,13 +253,16 @@ export default {
 
                 // Update the timer value with the formatted time
                 this.formattedTime = formattedTime;
+                if(this.timer === 0) {
+                    this.submit();
+                }
 
                 this.timer--;
+                this.timeSpent++;
 
-                if (this.timer <= 0) {
+
+                if (this.timer < 0) {
                     clearInterval(intervalId);
-                    this.submit();
-                    this.isCompleted = true;
                 }
             }, 1000);
         },
@@ -284,7 +320,6 @@ export default {
         handleNext() {
             this.submit();
             if (this.isLast) {
-                this.isCompleted = true;
             } else {
                 this.currentStep = 0;
                 this.questionIndex++;
@@ -470,20 +505,26 @@ export default {
 .game-container {
     width: 100%;
     height: 100vh;
+    padding: 30px 10px;
     margin: 0;
     background: $pale-cream;
+    box-sizing: border-box;
 
-    .question-section{
-        padding: 30px 20px;
+    .hint-btn {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
     }
-
+    .time-container {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 5px;
+    }
     .completed {
-        margin-top: 60px;
+        margin-top: 20px;
         text-align: center;
-        padding: 40px 30px;
-        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
-        border: solid 3px $light-red;
-        border-radius: 10px;
 
         h1 {
             margin-bottom: 10px;
@@ -514,6 +555,10 @@ export default {
         max-width: 500px;
         margin: 0 auto;
         position: relative;
+        box-sizing: border-box;
+        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+        border: solid 3px $light-red;
+        border-radius: 10px;
 
 
         .question-header {
@@ -548,7 +593,7 @@ export default {
 
             .time {
                 font-size: $font-medium;
-                color: $light-red;
+                color: $red;
                 text-align: center;
             }
         }
