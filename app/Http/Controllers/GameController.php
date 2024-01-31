@@ -61,7 +61,7 @@ class GameController extends Controller
            'game_id' => 'required|exists:games,id'
        ]);
 
-       $result = Result::find($request->game_id)->sum('correct_try');
+       $result = Result::where('game_id',$request->game_id)->sum('correct_try');
 
        return response()->json([
         'status' => true,
