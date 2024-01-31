@@ -3,7 +3,7 @@
         <particles></particles>
         <div class="main">
             <div class="logo-container">
-                <img src="../../assets/logo.svg" alt="logo">
+                <img src="image/logo.svg" alt="logo">
             </div>
             <div class="start-container">
                 <p class="home-text">Welcome to our game press the button to start</p>

@@ -11,11 +11,11 @@ class QuestionController extends Controller
     {
         $questionsWithHints = Question::with('hints')->get();
 
-        // Transform the data
+       
         $transformedData = $questionsWithHints->map(function ($question) {
             return [
                 'id' => $question->id,
-                'name' => $question->name, // Assuming name is an attribute of the Question model
+                'name' => $question->name, 
                 'level' => [
                     'id' => $question->level->id,
                     'name' => $question->level->name,
