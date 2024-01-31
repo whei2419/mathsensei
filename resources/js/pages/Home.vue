@@ -7,7 +7,7 @@
                 <img src="image/logo.svg" alt="logo">
             </div>
             <div class="start-container">
-                <p class="home-text">Welcome to our game press the button to start</p>
+                <p class="home-text">Welcome <span>{{ userData.name }}</span> to our game press the button to start</p>
                 <img src="image/highlight.svg" alt="">
                 <button @click="handleStart" class="solve-now-btn button primary button-full font-size-small">
                     <span>Solve now</span> <img src="image/triangle.svg" alt="">
@@ -75,11 +75,13 @@ export default {
                 const dateString = currentTime.toISOString();
                 const startTime = new Date();
                 localStorage.setItem('startTime', dateString);
-                const endTime = new Date(startTime.getTime() + 5 * 1000);
+                const endTime = new Date(startTime.getTime() + 180 * 1000);
                 const endTimeString = endTime.toISOString();
                 localStorage.setItem('endTime', endTimeString);
                 this.$router.push('/game');
                 this.isLoading = false;
+            }).catch((error) => {
+                console.error('Error occurred:', error);
             });
         },
         handleStart() {
@@ -150,6 +152,10 @@ export default {
             font-size: 1.5rem;
             color: $pale-text;
             margin-bottom: 20px;
+            span {
+                font-size: 2rem;
+                color: #4F709C;
+            }
         }
 
         img {

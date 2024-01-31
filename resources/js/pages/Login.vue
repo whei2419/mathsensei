@@ -5,6 +5,7 @@
             <div class="logo-container">
                 <img src="image/logo.svg" alt="logo">
             </div>
+            <p class="warning-text">{{ error }}</p>
             <div class="form">
                 <Form @submit="handleSubmit" :validation-schema="schema">
                     <div class="form-control">
@@ -22,7 +23,7 @@
                     </button>
                 </Form>
                 <div class="register-container">
-                    <p>Dont have an account <a href="">Register</a></p>
+                    <p>Dont have an account <router-link to="/register">Register</router-link></p>
                 </div>
             </div>
         </div>
@@ -46,11 +47,12 @@ export default {
     data() {
         const schema = yup.object({
             email: yup.string().required().email(),
-            password: yup.string().required()
+            password: yup.string().required(),
         });
         return {
             schema,
-            token:''
+            token:'',
+            error:'',
         }
     },
     methods: {
@@ -67,6 +69,9 @@ export default {
                 localStorage.setItem('userDetails', JSON.stringify(res.data.user));
                 localStorage.setItem('token', res.data.token);
                 this.$router.push('/Home');
+            }).catch((error) => {
+                console.error('Error occurred:', error);
+                this.error = error.response.data.message;
             });
         }
     },

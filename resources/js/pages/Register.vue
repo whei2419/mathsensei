@@ -1,6 +1,7 @@
 <template>
     <div class="main-container">
         <particles></particles>
+        <loader v-if="isLoading"></loader>
         <div class="form-container">
             <div class="logo-container">
                 <img src="image/logo.svg" alt="logo">
@@ -8,6 +9,11 @@
             <p class="warning-text">{{ error }}</p>
             <div class="form">
                 <Form @submit="handleSubmit" :validation-schema="schema">
+                    <div class="form-control">
+                        <label for="name">Name</label>
+                        <Field name="name" type="text" />
+                        <ErrorMessage class="error-message" name="name" />
+                    </div>
                     <div class="form-control">
                         <label for="email">Email</label>
                         <Field name="email" type="email" />
@@ -18,16 +24,22 @@
                         <Field name="password" type="password" />
                         <ErrorMessage class="error-message" name="password" />
                     </div>
+                    <div class="form-control">
+                        <label for="confirmPassword">Confirm password</label>
+                        <Field name="confirmPassword" type="password" />
+                        <ErrorMessage class="error-message" name="confirmPassword" />
+                    </div>
                     <button class="button primary button-full font-size-small">
-                        Login
+                        Register
                     </button>
                 </Form>
                 <div class="register-container">
-                    <p>Dont have an account <router-link to="/register">Register</router-link></p>
+                    <p>Already have an account <router-link to="/login">Login</router-link></p>
                 </div>
             </div>
         </div>
     </div>
+
 </template>
 
 <script>
@@ -36,48 +48,59 @@ import * as yup from 'yup';
 import config from '../utils.js'
 import axios from 'axios'
 import particles from "../layouts/Particle.vue"
+import loader  from "../layouts/Loader.vue";
 
 export default {
     components: {
         Form,
         Field,
         ErrorMessage,
-        particles
+        particles,
+        loader
     },
     data() {
         const schema = yup.object({
             email: yup.string().required().email(),
             password: yup.string().required(),
+            name: yup.string().required(),
+            confirmPassword: yup.string()
+        .required()
+        .oneOf([yup.ref('password'), null], 'Passwords dont match')
         });
         return {
             schema,
-            token:'',
-            error:'',
+            isLoading: false,
+            error: ''
         }
     },
     methods: {
         handleSubmit(values) {
-            console.log(config.baseUrl);
             axios({
                 method: "post",
-                url: `${config.baseUrl}/api/login`,
+                url: `${config.baseUrl}/api/register`,
                 data: {
-                   email:values.email,
-                   password:values.password
+                    name: values.name,
+                    email: values.email,
+                    password: values.password
                 },
-            }).then((res) => {
-                localStorage.setItem('userDetails', JSON.stringify(res.data.user));
-                localStorage.setItem('token', res.data.token);
-                this.$router.push('/Home');
-            }).catch((error) => {
+            })
+            .then((res) => {
+                    this.isLoading = false;
+                    console.log('success');
+                    localStorage.setItem('userDetails', JSON.stringify(res.data.user));
+                    localStorage.setItem('token', res.data.token);
+                    this.$router.push('/Home');
+            })
+            .catch((error) => {
                 console.error('Error occurred:', error);
-                this.error = error.response.data.message;
+                this.error = error.response.data.errors.email[0];
             });
         }
     },
     created(){
         this.token = config.token;
     }
+
 }
 </script>
 
@@ -89,30 +112,18 @@ export default {
     margin: 0;
     background: $pale-cream;
     padding: 40px 30px 30px 30px;
-
-    .register-container{
-        text-align: center;
-        margin-top: 20px;
-        box-sizing: border-box;
-    }
+    overflow: auto;
 
     .logo-container{
         display: flex;
         justify-content: center;
         align-items: center;
         img{
-           width: 80%;
+           width: 50%;
         }
         margin-bottom: 10px;
         box-sizing: border-box;
     }
-
-    .head-Text {
-        text-align: center;
-        margin-bottom: 2rem;
-        font-size: 4rem;
-    }
-
     .form-container {
         padding: 30px;
         display: flex;
@@ -165,5 +176,12 @@ export default {
         }
 
     }
+
+    .register-container{
+        text-align: center;
+        margin-top: 20px;
+        box-sizing: border-box;
+    }
 }
+
 </style>
