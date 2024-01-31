@@ -3,8 +3,9 @@
         <particles></particles>
         <div class="game-information">
             <div class="header-game">
-                <div v-if="!isCompleted || !timer === 0" class="time-container">
-                    <img src="image/clock.svg" alt=""><p class="time">{{ formattedTime }}</p>
+                <div v-if="!isCompleted || formattedTime" class="time-container">
+                    <img class="time-clock" src="image/clock.svg" alt="">
+                    <p class="time">{{ formattedTime }}</p>
                 </div>
                 <button v-if="!isCompleted" class="hint-btn button primary font-size-small" @click="showAnswear">
                     <span>Hint</span> <img src="image/bulb.svg" alt="">
@@ -108,8 +109,8 @@ export default {
                 skip: 0,
                 time_spent: 0,
             },
-            score:0,
-            timeSpent:0,
+            score: 0,
+            timeSpent: 0,
             isNext: false,
             lastQuestionTime: 0,
             solutionKey: null,
@@ -164,7 +165,7 @@ export default {
         },
     },
     methods: {
-        clearData(){
+        clearData() {
             localStorage.removeItem("startTime");
             localStorage.removeItem("endTime");
             localStorage.removeItem("game_id");
@@ -175,21 +176,21 @@ export default {
             this.clearData();
             this.$router.push("/home");
         },
-        getResult(){
+        getResult() {
             const token = localStorage.getItem("token");
             const gameID = localStorage.getItem("game_id");
             axios({
                 method: "post",
                 url: `${config.baseUrl}/api/game/score`,
-                data : {
-                    game_id:gameID
+                data: {
+                    game_id: gameID
                 },
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             }).then((res) => {
                 this.score = res.data.score;
-               this.isCompleted = true;
+                this.isCompleted = true;
             });
         },
         submit() {
@@ -224,9 +225,9 @@ export default {
                 this.gameData.time_spent = 0;
                 this.timeSpent = 0;
 
-                if(this.isLast ){
+                if (this.isLast) {
                     this.getResult()
-                }else if(this.timer <= 0){
+                } else if (this.timer <= 0) {
                     this.getResult()
                 }
             });
@@ -253,7 +254,17 @@ export default {
 
                 // Update the timer value with the formatted time
                 this.formattedTime = formattedTime;
-                if(this.timer === 0) {
+                if (this.timer < 10) {
+                    let text = document.querySelector('.time-container');
+
+                    if (text.classList.contains('grow')) {
+
+                    } else {
+                        text.classList.add('grow');
+                    }
+                }
+
+                if (this.timer === 0) {
                     this.submit();
                 }
 
@@ -293,14 +304,14 @@ export default {
             } else {
                 let currentStepData =
                     this.currentQuestion[this.questionIndex].solutions[this.solutionKey][this.currentStep];
-                    this.$nextTick(() => {
-                let leftInput = this.$refs[currentStepLeft];
-                let rightInput = this.$refs[currentStepRight];
+                this.$nextTick(() => {
+                    let leftInput = this.$refs[currentStepLeft];
+                    let rightInput = this.$refs[currentStepRight];
 
-                leftInput[0].value = currentStepData.left;
-                rightInput[0].value = currentStepData.right;
-                this.gameData.hint++;
-            });
+                    leftInput[0].value = currentStepData.left;
+                    rightInput[0].value = currentStepData.right;
+                    this.gameData.hint++;
+                });
             }
 
         },
@@ -431,7 +442,7 @@ export default {
             const leftInput = this.$refs[currentStepLeft];
             const rightInput = this.$refs[currentStepRight];
             let currentStepData =
-            this.currentQuestion[this.questionIndex].solutions[this.solutionKey][this.currentStep];
+                this.currentQuestion[this.questionIndex].solutions[this.solutionKey][this.currentStep];
 
             if (
                 leftInput[0].value === null ||
@@ -490,7 +501,6 @@ export default {
             this.sampleData = questionsFromLocalStorage;
         }
         this.timer = this.remainingSeconds;
-        this.formattedTime = this.timer;
         this.gameId = localStorage.getItem("game_id");
         this.gameData.gameID = this.gameId;
 
@@ -516,12 +526,18 @@ export default {
         align-items: center;
         gap: 10px;
     }
+
     .time-container {
         display: flex;
         justify-content: flex-start;
         align-items: center;
         gap: 5px;
+
+        &.grow {
+            animation: growAndPulse 1s infinite ease-in-out;
+        }
     }
+
     .completed {
         margin-top: 20px;
         text-align: center;
@@ -595,6 +611,24 @@ export default {
                 font-size: $font-medium;
                 color: $red;
                 text-align: center;
+
+            }
+
+            @keyframes growAndPulse {
+                0% {
+                    transform: scale(1);
+                    opacity: 1;
+                }
+
+                50% {
+                    transform: scale(1.2);
+                    opacity: 0.8;
+                }
+
+                100% {
+                    transform: scale(1);
+                    opacity: 1;
+                }
             }
         }
 
@@ -679,5 +713,4 @@ export default {
             }
         }
     }
-}
-</style>
+}</style>

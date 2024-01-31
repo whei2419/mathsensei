@@ -3,6 +3,7 @@ import Login from '../pages/Login.vue';
 import Game from '../pages/Game.vue';
 import Home from '../pages/Home.vue';
 import Index from '../index.vue';
+import Register from '../pages/Register.vue';
 
 const routes = [
     {
@@ -14,6 +15,11 @@ const routes = [
         path: '/login',
         component: Login,
         name: 'Login'
+    },
+    {
+        path: '/register',
+        component: Register,
+        name: 'Register'
     },
     {
         path: '/game',
@@ -50,7 +56,7 @@ function isAuthenticated() {
 }
 
 router.beforeEach((to, from, next) => {
-    if (to.name !== 'Login' && !isAuthenticated()) {
+    if (to.name !== 'Login' && !isAuthenticated() && to.name !== 'Register') {
         next({ name: 'Login' });
     } else {
         next();
