@@ -18,6 +18,11 @@
         background-color: $blue-grey;
         color: $white;
     }
+    &.transparent {
+        background-color: $white;
+        color: $red;
+        border: 3px solid $red;
+    }
 
     &.font-size-small {
         font-size:$font-small;

@@ -11,6 +11,9 @@
                 <button @click="handleStart" class="solve-now-btn button primary button-full font-size-small">
                     <span>Solve now</span> <img src="image/triangle.svg" alt="">
                 </button>
+                <button @click="handleLogout" class="sign-out button transparent button-full font-size-small">
+                    <span>Exit</span>
+                </button>
             </div>
         </div>
     </div>
@@ -32,10 +35,10 @@ export default {
             token: null,
         };
     },
-    mounted() {
-        // this.playMusic();
-    },
     methods: {
+        handleLogout(){
+            config.logout();
+        },
         playMusic() {
             this.audio.play();
         },
@@ -140,6 +143,7 @@ export default {
             justify-content: center;
             align-items: center;
             gap: 10px;
+            margin-bottom: 10px;
 
             span {
                 font-size: 1.5rem;
