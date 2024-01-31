@@ -12,11 +12,12 @@
                 <button @click="handleStart" class="solve-now-btn button primary button-full font-size-small">
                     <span>Solve now</span> <img src="image/triangle.svg" alt="">
                 </button>
-                <button @click="handleLogout" class="sign-out button transparent button-full font-size-small">
+                <button @click="openModal" class="sign-out button transparent button-full font-size-small">
                     <span>Exit</span>
                 </button>
             </div>
         </div>
+        <Modal v-if="isOpen" @close="handleClose" @save="handleLogout" :message="modalMessage"></Modal>
     </div>
 </template>
 
@@ -26,20 +27,30 @@ import bgSound from "../../sounds/ES_Sunshine Rain.mp3";
 import axios from "axios";
 import config from "../utils.js";
 import loader  from "../layouts/Loader.vue";
+import Modal from "../layouts/Modal.vue";
 export default {
     components: {
         particles,
-        loader
+        loader,
+        Modal
     },
     data() {
         return {
             audio: new Audio(bgSound),
             userData: null,
             token: null,
-            isLoading: false
+            isLoading: false,
+            isOpen:false,
+            modalMessage:'Are you suer you want to logout?'
         };
     },
     methods: {
+        openModal(){
+            this.isOpen = true;
+        },
+        handleClose(){
+            this.isOpen = false;
+        },
         handleLogout() {
             const token = localStorage.getItem("token");
             axios({
@@ -50,6 +61,7 @@ export default {
                 },
             }).then((res) => {
                 localStorage.removeItem("token");
+                this.isOpen = false;
                 this.$router.push('/');
             });
 
@@ -114,6 +126,7 @@ export default {
 .game-container {
     box-sizing: border-box;
     padding-top: 30px;
+    position: relative;
 
     .main {
         max-width: 500px;

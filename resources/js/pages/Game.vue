@@ -3,7 +3,7 @@
         <particles></particles>
         <div class="game-information">
             <div class="header-game">
-                <div v-if="!isCompleted || formattedTime" class="time-container">
+                <div v-if="!isCompleted" class="time-container">
                     <img class="time-clock" src="image/clock.svg" alt="">
                     <p class="time">{{ formattedTime }}</p>
                 </div>
@@ -254,7 +254,7 @@ export default {
 
                 // Update the timer value with the formatted time
                 this.formattedTime = formattedTime;
-                if (this.timer < 10) {
+                if (this.timer < 10 && !this.timer === 0) {
                     let text = document.querySelector('.time-container');
 
                     if (text.classList.contains('grow')) {
@@ -713,4 +713,5 @@ export default {
             }
         }
     }
-}</style>
+}
+</style>

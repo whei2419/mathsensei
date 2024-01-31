@@ -51,8 +51,8 @@ export default {
         });
         return {
             schema,
-            token:'',
-            error:'',
+            token: '',
+            error: '',
         }
     },
     methods: {
@@ -62,8 +62,8 @@ export default {
                 method: "post",
                 url: `${config.baseUrl}/api/login`,
                 data: {
-                   email:values.email,
-                   password:values.password
+                    email: values.email,
+                    password: values.password
                 },
             }).then((res) => {
                 localStorage.setItem('userDetails', JSON.stringify(res.data.user));
@@ -75,7 +75,7 @@ export default {
             });
         }
     },
-    created(){
+    created() {
         this.token = config.token;
     }
 }
@@ -90,19 +90,21 @@ export default {
     background: $pale-cream;
     padding: 40px 30px 30px 30px;
 
-    .register-container{
+    .register-container {
         text-align: center;
         margin-top: 20px;
         box-sizing: border-box;
     }
 
-    .logo-container{
+    .logo-container {
         display: flex;
         justify-content: center;
         align-items: center;
-        img{
-           width: 80%;
+
+        img {
+            width: 80%;
         }
+
         margin-bottom: 10px;
         box-sizing: border-box;
     }
@@ -123,8 +125,10 @@ export default {
         box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
         border: solid 3px $light-red;
         border-radius: 10px;
+
         .form {
             box-sizing: border-box;
+
             .form-control {
                 width: 95%;
                 box-sizing: border-box;
@@ -165,5 +169,4 @@ export default {
         }
 
     }
-}
-</style>
+}</style>
