@@ -1,5 +1,6 @@
 <template>
     <div class="game-container" @click="randomTap">
+        <particles></particles>
         <div class="game-information">
             <div class="header-game">
                 <button class="button primary font-size-small">Menu</button>
@@ -75,8 +76,12 @@
 
 <script>
 import config from "../utils.js";
+import particles from "../layouts/Particle.vue"
 export default {
     name: "Game",
+    components: {
+        particles
+    },
     data() {
         return {
             isFirstInput: true,
