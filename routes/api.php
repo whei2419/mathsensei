@@ -24,6 +24,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::middleware(['auth:sanctum'])->group(function () {
+    Route::group(['prefix' => 'user'], function () {
+        Route::post('/logout', [AuthController::class, 'logout']);
+    });
+
     Route::group(['prefix' => 'question'], function () {
         Route::get('get', [QuestionController::class, 'get']);
     });
