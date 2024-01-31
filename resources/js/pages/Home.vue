@@ -1,7 +1,8 @@
 <template>
     <div class="game-container">
         <particles></particles>
-        <div class="main">
+        <loader v-if="isLoading"></loader>
+        <div v-else class="main">
             <div class="logo-container">
                 <img src="image/logo.svg" alt="logo">
             </div>
@@ -24,20 +25,34 @@ import particles from "../layouts/Particle.vue"
 import bgSound from "../../sounds/ES_Sunshine Rain.mp3";
 import axios from "axios";
 import config from "../utils.js";
+import loader  from "../layouts/Loader.vue";
 export default {
-    components:{
-        particles
+    components: {
+        particles,
+        loader
     },
     data() {
         return {
             audio: new Audio(bgSound),
             userData: null,
             token: null,
+            isLoading: false
         };
     },
     methods: {
-        handleLogout(){
-            config.logout();
+        handleLogout() {
+            const token = localStorage.getItem("token");
+            axios({
+                method: "post",
+                url: `${config.baseUrl}/api/user/logout`,
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }).then((res) => {
+                localStorage.removeItem("token");
+                this.$router.push('/');
+            });
+
         },
         playMusic() {
             this.audio.play();
@@ -60,13 +75,15 @@ export default {
                 const dateString = currentTime.toISOString();
                 const startTime = new Date();
                 localStorage.setItem('startTime', dateString);
-                const endTime = new Date(startTime.getTime() + 180 * 1000);
+                const endTime = new Date(startTime.getTime() + 5 * 1000);
                 const endTimeString = endTime.toISOString();
                 localStorage.setItem('endTime', endTimeString);
                 this.$router.push('/game');
+                this.isLoading = false;
             });
         },
         handleStart() {
+            this.isLoading = true;
             const token = localStorage.getItem("token");
             axios({
                 method: "post",
@@ -79,7 +96,7 @@ export default {
                 },
             }).then((res) => {
                 localStorage.setItem("isStart", true);
-                localStorage.setItem('game_id', res.data.game.user_id);
+                localStorage.setItem('game_id', res.data.game.id);
                 this.getQuestion();
             });
         },
@@ -106,14 +123,17 @@ export default {
         border: solid 3px $light-red;
         border-radius: 10px;
     }
-    .logo-container{
+
+    .logo-container {
         display: flex;
         justify-content: center;
         align-items: center;
         box-sizing: border-box;
-        img{
-           width: 80%;
+
+        img {
+            width: 80%;
         }
+
         margin-bottom: 10px;
         box-sizing: border-box;
     }
@@ -126,11 +146,12 @@ export default {
         background-color: $pale-background;
         box-sizing: border-box;
 
-        .home-text{
+        .home-text {
             font-size: 1.5rem;
-            color:$pale-text;
+            color: $pale-text;
             margin-bottom: 20px;
         }
+
         img {
             margin-bottom: 20px;
             width: 70%;
@@ -155,5 +176,4 @@ export default {
             }
         }
     }
-}
-</style>
+}</style>

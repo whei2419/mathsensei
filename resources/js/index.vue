@@ -63,7 +63,7 @@ p{
 }
 .loader {
   border: 8px solid $light-red;
-  border-top: 8px solid $red;
+  border-top: 8px solid #ffffff;
   border-radius: 50%;
   width: 5rem;
   height: 5rem;
