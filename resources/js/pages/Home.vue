@@ -1,5 +1,6 @@
 <template>
     <div class="game-container">
+        <particles></particles>
         <div class="main">
             <div class="logo-container">
                 <img src="../../assets/logo.svg" alt="logo">
@@ -16,10 +17,14 @@
 </template>
 
 <script>
+import particles from "../layouts/Particle.vue"
 import bgSound from "../../sounds/ES_Sunshine Rain.mp3";
 import axios from "axios";
 import config from "../utils.js";
 export default {
+    components:{
+        particles
+    },
     data() {
         return {
             audio: new Audio(bgSound),
@@ -87,6 +92,7 @@ export default {
 .game-container {
     box-sizing: border-box;
     padding-top: 30px;
+
     .main {
         max-width: 500px;
         margin: 0 auto;
