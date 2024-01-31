@@ -1,5 +1,6 @@
 <template>
     <div class="main-container">
+        <particles></particles>
         <div class="form-container">
             <div class="logo-container">
                 <img src="../../assets/logo.svg" alt="logo">
@@ -33,12 +34,14 @@ import { Field, Form, ErrorMessage } from 'vee-validate';
 import * as yup from 'yup';
 import config from '../utils.js'
 import axios from 'axios'
+import particles from "../layouts/Particle.vue"
 
 export default {
     components: {
         Form,
         Field,
-        ErrorMessage
+        ErrorMessage,
+        particles
     },
     data() {
         const schema = yup.object({
@@ -80,7 +83,7 @@ export default {
     height: 100vh;
     margin: 0;
     background: $pale-cream;
-    padding: 20vh 30px 30px 30px;
+    padding: 40px 30px 30px 30px;
 
     .register-container{
         text-align: center;
