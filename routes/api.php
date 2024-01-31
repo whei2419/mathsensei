@@ -31,7 +31,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::group(['prefix' => 'game'], function () {
         Route::post('add', [GameController::class, 'newGame']);
         Route::post('result', [GameController::class, 'results']);
-
+        Route::post('score', [GameController::class, 'score']);
     });
 
   

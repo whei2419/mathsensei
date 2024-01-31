@@ -52,6 +52,20 @@ class GameController extends Controller
             'status' => true,
             'result' => $result,
         ], 200);
+    }
 
+    public function score(Request $request)
+    {
+        $validateUser = Validator::make($request->all(), 
+        [
+           'game_id' => 'required|exists:games,id'
+       ]);
+
+       $result = Result::find($request->game_id)->sum('correct_try');
+
+       return response()->json([
+        'status' => true,
+        'score' => $result,
+    ], 200);
     }
 }

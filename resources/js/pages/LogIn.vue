@@ -3,7 +3,7 @@
         <particles></particles>
         <div class="form-container">
             <div class="logo-container">
-                <img src="../../assets/logo.svg" alt="logo">
+                <img src="image/logo.svg" alt="logo">
             </div>
             <div class="form">
                 <Form @submit="handleSubmit" :validation-schema="schema">
