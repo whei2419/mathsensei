@@ -7,9 +7,9 @@
             </div>
             <div class="start-container">
                 <p class="home-text">Welcome to our game press the button to start</p>
-                <img src="../../assets/highlight.svg" alt="">
+                <img src="image/highlight.svg" alt="">
                 <button @click="handleStart" class="solve-now-btn button primary button-full font-size-small">
-                    <span>Solve now</span> <img src="../../assets/triangle.svg" alt="">
+                    <span>Solve now</span> <img src="image/triangle.svg" alt="">
                 </button>
             </div>
         </div>
