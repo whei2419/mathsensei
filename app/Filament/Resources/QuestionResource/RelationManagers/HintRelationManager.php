@@ -21,6 +21,9 @@ class HintRelationManager extends RelationManager
                 Forms\Components\TextInput::make('left')
                     ->required()
                     ->maxLength(255),
+                Forms\Components\TextInput::make('left')
+                    ->required()
+                    ->maxLength(255),
                 Forms\Components\TextInput::make('right')
                     ->required()
                     ->maxLength(255),
@@ -36,9 +39,9 @@ class HintRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('id')
             ->columns([
+                Tables\Columns\TextColumn::make('text'),
                 Tables\Columns\TextColumn::make('left'),
                 Tables\Columns\TextColumn::make('right'),
-
             ])
             ->filters([
                 //
