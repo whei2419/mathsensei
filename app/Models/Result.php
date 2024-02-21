@@ -18,6 +18,9 @@ class Result extends Model
         'time_spent',
         'game_id',
         'question_id',
+        'next',
+        'extra_time',
+
     ];
 
     public function question()

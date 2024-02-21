@@ -18,7 +18,9 @@ return new class extends Migration
             $table->string('wrong_try');
             $table->string('correct_try');
             $table->string('skip');
+            $table->string('next');
             $table->string('time_spent');
+            $table->string('extra_time');
 
             $table->unsignedBigInteger('game_id');
             $table->unsignedBigInteger('question_id');
