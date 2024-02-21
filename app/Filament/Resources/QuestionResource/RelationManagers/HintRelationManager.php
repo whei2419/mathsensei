@@ -18,7 +18,7 @@ class HintRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('left')
+                Forms\Components\TextInput::make('text')
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('left')
