@@ -25,7 +25,7 @@ class QuestionResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Select::make('level_id')
-                    ->label('User')
+                    ->label('Level')
                     ->options(Level::all()->pluck('name', 'id'))
                     ->required(),
                 Forms\Components\TextInput::make('name')
