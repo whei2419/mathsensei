@@ -42,6 +42,8 @@ class GameController extends Controller
         $result->hint_used = $request->hint_used;
         $result->wrong_try = $request->wrong_try;
         $result->correct_try = $request->correct_try;
+        $result->next = $request->next;
+        $result->extra_time = $request->extra_time;
         $result->skip = $request->skip;
         $result->time_spent = $request->time_spent;
         $result->question_id = $request->question_id;
