@@ -34,7 +34,7 @@ class QuestionController extends Controller
         $transformedData = $questions->map(function ($question) {
             return [
                 'id' => $question->id,
-                'question_text' => $question->question_text, // Adjusted from 'name' to 'question_text'
+                'question_text' => $question->name, // Adjusted from 'name' to 'question_text'
                 'level' => [
                     'id' => $question->level->id,
                     'name' => $question->level->name,
@@ -43,6 +43,7 @@ class QuestionController extends Controller
                     return $hints->map(function ($hint) {
                         return [
                             'id' => $hint->id, 
+                            'text' => $hint->text, 
                             'left' => $hint->left, 
                             'right' => $hint->right, 
                         ];
