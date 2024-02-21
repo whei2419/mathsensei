@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('right');
             $table->unsignedBigInteger('question_id');
             $table->string('solution_number');
+            $table->string('text');
 
             $table->timestamps();
 

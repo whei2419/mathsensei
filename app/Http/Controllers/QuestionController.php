@@ -9,13 +9,32 @@ class QuestionController extends Controller
 {
     public function get(Request $request)
     {
-        $questionsWithHints = Question::with('hints')->get();
+        $query = Question::query();
 
-       
-        $transformedData = $questionsWithHints->map(function ($question) {
+        switch (auth()->user()->type) {
+            case 1:
+                $query->orderByRaw('level_id ASC');
+                break;
+            case 2:
+                $query->orderByRaw('level_id DESC');
+                break;
+            case 3:
+                $query->inRandomOrder();
+                break;
+            default:
+        }
+        
+        
+        
+        $questions = $query->get();
+        
+        $questionsWithHints = Question::with('hints')->get();
+        // return $questions;
+
+        $transformedData = $questions->map(function ($question) {
             return [
                 'id' => $question->id,
-                'name' => $question->name, 
+                'question_text' => $question->question_text, // Adjusted from 'name' to 'question_text'
                 'level' => [
                     'id' => $question->level->id,
                     'name' => $question->level->name,
@@ -31,8 +50,9 @@ class QuestionController extends Controller
                 }),
             ];
         });
-
-        return response()->json(['questions'=>$transformedData], 200);
+        
+        return response()->json(['questions' => $transformedData], 200);
+        
 
     }
 }
