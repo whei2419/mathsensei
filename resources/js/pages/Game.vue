@@ -361,7 +361,8 @@ export default {
       if (e.target.tagName === "BUTTON" || e.target.tagName === "INPUT") {
         return;
       }
-      this.gameData.randomTap++;
+      console.log('tap');
+      this.gameData.randomTaps++;
     },
 
     startTimer() {
