@@ -18,6 +18,10 @@
         background-color: $blue-grey;
         color: $white;
     }
+    &.success{
+        background-color: $yellow;
+        color: $white;
+    }
     &.transparent {
         background-color: $red;
         color: $white;
