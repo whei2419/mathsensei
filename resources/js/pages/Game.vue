@@ -1,8 +1,8 @@
 <template>
-  <div class="game-container" @click="randomTap">
+  <div id="mainDiv" class="game-container" @click="randomTap">
     <particles></particles>
     <div class="game-information">
-      <div class="header-game">
+      <div v-if="!nextView" class="header-game">
         <div v-if="!isCompleted" class="time-container">
           <img class="time-clock" src="image/clock.svg" alt="" />
           <p class="time">{{ formattedTime }}</p>
@@ -16,7 +16,7 @@
           ><span>Hint</span> <img src="image/bulb.svg" alt="" />
         </button>
       </div>
-      <div v-if="!isCompleted" class="question-section">
+      <div v-if="!isCompleted && !nextView" class="question-section">
         <h1 class="question-header">Equation {{ questionIndex + 1 }}</h1>
         <h2 class="problem-name">
           {{ currentQuestion[questionIndex].question_text }}
@@ -64,21 +64,12 @@
         </div>
         <div class="button-container">
           <button
-            v-if="!isNext"
             class="check-button button primary button-full font-size-small"
             @click="handleAnswear"
           >
             Check
           </button>
           <button
-            v-else
-            class="check-button button primary button-full font-size-small"
-            @click="handleNext"
-          >
-            Next
-          </button>
-          <button
-            v-if="!isNext"
             class="skip-btn button secondary button-full font-size-small"
             @click="handleSkip"
           >
@@ -86,7 +77,18 @@
           </button>
         </div>
       </div>
-      <div v-else class="completed">
+      <div v-if="nextView && !isCompleted" class="question-complete completed">
+        <h1>You completed a question would you like to go to the next</h1>
+        <Vue3Lottie :animationData="checkAnimation" :height="200" :width="200" />
+        <!-- <span class="check-icon"><i class="fa-solid fa-circle-check"></i></span> -->
+            <button
+            class="check-button button secondary button-full font-size-small"
+            @click="goToNext"
+          >
+           <span>Next</span>  <span><i class="fa-solid fa-arrow-right ml-1"></i></span>
+          </button>
+      </div>
+      <div v-if="isCompleted" class="completed">
         <h1>Thank you for playing the game</h1>
         <p>Your Score is:</p>
         <h2 class="score-text">{{ score }}</h2>
@@ -105,6 +107,7 @@
           </button>
         </div>
       </div>
+
     </div>
     <Modal
       v-if="isOpen"
@@ -125,17 +128,27 @@
 </template>
 
 <script>
+import moment from "moment";
 import config from "../utils.js";
 import particles from "../layouts/Particle.vue";
 import Modal from "../layouts/Modal.vue";
+import lottie from 'lottie-web';
+import animationData from '../../../public/image/check.json';
+import { Vue3Lottie } from "vue3-lottie";
+
+
 export default {
   name: "Game",
   components: {
     particles,
     Modal,
+    Vue3Lottie
+
   },
   data() {
     return {
+    nextView:false,
+      sequence: [],
       timelimit: 60,
       timerModal: false,
       timerTitle: "Time ending",
@@ -179,7 +192,11 @@ export default {
       solutionKey: null,
       stepCounter: [],
       intervalId: null,
+      checkAnimation:null
     };
+  },
+  mounted(){
+    this.checkAnimation = animationData;
   },
   computed: {
     isLast() {
@@ -232,6 +249,10 @@ export default {
     },
   },
   methods: {
+    logSequence(name) {
+      const time = moment().format("YYYY-MM-DD HH:mm:ss");
+      this.sequence.push({ action: name, time: time });
+    },
     restart() {
       this.isNext = false;
       this.isCompleted = false;
@@ -245,6 +266,7 @@ export default {
       this.startTimer();
     },
     handleAddTime() {
+        this.logSequence("add-time",);
       this.additionalTimeCount = this.additionalTimeCount + 1;
       this.timer = this.timer + 15;
       this.timerModal = false;
@@ -255,6 +277,7 @@ export default {
       this.timerModal = false;
     },
     handleHint() {
+      this.logSequence("hint");
       this.gameData.hint = this.gameData.hint + 1;
       const existingStepIndex = this.stepCounter.findIndex(
         (item) => item.step === this.currentStep
@@ -278,6 +301,7 @@ export default {
       this.isOpen = true;
     },
     handleClose() {
+        this.logSequence("close-modal");
       this.isOpen = false;
     },
     clearData() {
@@ -358,10 +382,16 @@ export default {
       });
     },
     randomTap(e) {
+      const div = document.getElementById("mainDiv");
       if (e.target.tagName === "BUTTON" || e.target.tagName === "INPUT") {
         return;
       }
-      console.log('tap');
+
+      if (!div.contains(e.target)) {
+        return;
+      }
+
+      this.logSequence("random");
       this.gameData.randomTaps++;
     },
 
@@ -447,26 +477,41 @@ export default {
       }
     },
     handleChange(e) {
+      this.logSequence("typing");
       e.target.classList.remove("wrong-answer");
       this.showError.class = false;
       this.showError.value = "";
     },
-    handleSkip() {
-      if (this.isLast) {
-        this.submit(true);
-        this.showSkip = false;
-      } else {
-        this.submit();
+    goToNext(){
+        this.logSequence("next");
         this.timer = this.timelimit;
         this.questionIndex++;
-        this.gameData.skip++;
         this.stopTimer();
         this.startTimer();
-      }
+        this.currentStep = 0;
+        this.firstLeft = null;
+        this.firstRight = null;
+        this.solutionKey = null;
+        this.isFirstInput = true;
+        this.timer = this.timelimit;
+        this.nextView = false;
+    },
+    handleSkip() {
+        this.gameData.skip++;
+        this.logSequence("skip");
+        this.stopTimer();
+         if(this.isLast){
+            this.submit(true);
+            this.nextView = false;
+         }else {
+            this.submit();
+            this.nextView = true;
+         }
     },
     handleNext() {
+      this.logSequence("next");
       this.gameData.next = this.gameData.next + 1;
-      this.submit(true);
+      this.submit();
       if (this.isLast) {
       } else {
         this.currentStep = 0;
@@ -540,25 +585,24 @@ export default {
           0
         );
 
-        console.log(this.currentStep);
-
         this.$nextTick(() => {
-          console.log(currentStepData);
           const leftInput = this.$refs[currentStepLeft];
           const rightInput = this.$refs[currentStepRight];
-
-          console.log(leftInput);
-
           leftInput[0].value = currentStepData.left;
           rightInput[0].value = currentStepData.right;
           leftInput[0].classList.add("is-done");
           rightInput[0].classList.add("is-done");
+          if(this.isLastStep){
+            this.nextView = true;
+            return;
+          }
           this.currentStep++;
         });
       }
     },
 
     handleAnswear() {
+      this.logSequence("check-asnwear");
       if (this.currentStep === 0) {
         this.checkSolutionKey();
         return;
@@ -597,15 +641,22 @@ export default {
         this.gameData.wrongTry++;
         return;
       }
+      console.log(currentStepData.right,currentStepData.left);
       if (
         leftInput[0].value === currentStepData.left &&
         rightInput[0].value === currentStepData.right
       ) {
+
         if (this.currentStep <= this.stepCount) {
           leftInput[0].classList.add("is-done");
           rightInput[0].classList.add("is-done");
+
           if (this.isLastStep) {
-            this.isNext = true;
+            if(this.isLast) {
+              this.submit(true);
+              return
+            }
+            this.nextView = true;
           } else {
             this.currentStep++;
           }
@@ -859,5 +910,18 @@ export default {
   width: 10px;
   height: 10px;
   border-radius: 20px;
+}
+.question-complete {
+    h1 {
+        margin-top: 40px !important;
+        margin-bottom: 10px !important;
+    }
+    .check-icon {
+        font-size: 5rem;
+        color:$green ;
+    }
+    .button {
+        margin-top: 20px !important;
+    }
 }
 </style>
