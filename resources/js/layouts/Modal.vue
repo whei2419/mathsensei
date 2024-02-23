@@ -18,14 +18,14 @@
           class="button transparent button-full font-size-small"
           @click="closeModal"
         >
-          Cancel
+          {{ button[0] }}
         </button>
         <button
           v-if="confirm"
           class="button primary button-full font-size-small"
           @click="save"
         >
-          Confirm
+         {{button[1]}}
         </button>
       </div>
     </div>
@@ -37,6 +37,10 @@ import "@fortawesome/fontawesome-free/css/all.css";
 import { boolean } from "yup";
 export default {
   props: {
+    button:{
+        type:Array,
+        default:['Cancel','Confirm']
+    },
     title: {
       type: String,
       required: false,

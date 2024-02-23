@@ -119,6 +119,7 @@
     ></Modal>
     <Modal
       v-if="timerModal"
+      :button="['Skip','Confirm']"
       :title="timerTitle"
       @save="handleAddTime"
       @close="timerClose"
@@ -153,7 +154,7 @@ export default {
       timerModal: false,
       timerTitle: "Time ending",
       timerMessage:
-        "Your time is running out do you want to  extend your timer +15 sec",
+        "Your time is running out do you want to  extend your it?",
       title: "Hint",
       isOpen: false,
       modalMessage: "",
@@ -273,6 +274,7 @@ export default {
       this.startTimer();
     },
     timerClose() {
+        this.stopTimer();
       this.handleSkip();
       this.timerModal = false;
     },
