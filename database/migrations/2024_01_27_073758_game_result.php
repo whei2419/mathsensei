@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('next');
             $table->string('time_spent');
             $table->string('extra_time');
+            $table->string('sequence');
 
             $table->unsignedBigInteger('game_id');
             $table->unsignedBigInteger('question_id');
