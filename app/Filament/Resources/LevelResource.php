@@ -26,6 +26,9 @@ class LevelResource extends Resource
                 Forms\Components\TextInput::make('name')
                 ->required()
                 ->maxLength(255),
+                Forms\Components\ColorPicker::make('color')
+                ->required()
+                ->rgb()
             ]);
     }
 
@@ -34,6 +37,8 @@ class LevelResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                ->searchable(),
+                Tables\Columns\TextColumn::make('color')
                 ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
