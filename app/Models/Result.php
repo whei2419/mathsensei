@@ -20,6 +20,8 @@ class Result extends Model
         'question_id',
         'next',
         'extra_time',
+        'sequence',
+
 
     ];
 

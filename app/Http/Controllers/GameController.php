@@ -48,6 +48,7 @@ class GameController extends Controller
         $result->time_spent = $request->time_spent;
         $result->question_id = $request->question_id;
         $result->game_id = $request->game_id;
+        $result->sequence = $request->sequence;
         $result->save();
 
         return response()->json([
