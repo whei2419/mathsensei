@@ -14,6 +14,7 @@ class Question extends Model
     protected $fillable = [
         'name',
         'level_id',
+        'schema'
     ];
 
     protected $appends = ['level'];

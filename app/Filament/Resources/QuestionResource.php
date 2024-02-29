@@ -32,6 +32,10 @@ class QuestionResource extends Resource
                     ->label('Question')
                     ->required()
                     ->maxLength(255),
+                Forms\Components\TextInput::make('schema')
+                    ->label('Schema')
+                    ->required()
+                    ->maxLength(255),
             ]);
     }
 
@@ -46,6 +50,8 @@ class QuestionResource extends Resource
                 ->label('Question')
 
                     ->searchable(),
+                    Tables\Columns\TextColumn::make('schema')
+                ->label('Schema'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

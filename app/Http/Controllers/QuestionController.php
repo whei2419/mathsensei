@@ -38,6 +38,8 @@ class QuestionController extends Controller
                 'level' => [
                     'id' => $question->level->id,
                     'name' => $question->level->name,
+                    'color' => $question->level->color,
+
                 ],
                 'solutions' => $question->hints->groupBy('solution_number')->map(function ($hints) {
                     return $hints->map(function ($hint) {
