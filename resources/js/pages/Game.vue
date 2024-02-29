@@ -349,7 +349,7 @@ export default {
         data: {
           next: this.gameData.next,
           extra_time: this.gameData.extraTime,
-            sequence: this.sequence,
+            sequence: JSON.stringify( this.sequence),
           game_id: this.gameData.gameID,
           question_id: this.gameData.questionID,
           random_tap: this.gameData.randomTaps,
